@@ -17,9 +17,10 @@ extern "C"
 
 
 #include "linmath.h"
-
+// C libs for example triangle
 #include <stdlib.h>
 #include <stdio.h>
+
 static const struct
 {
     float x, y;
