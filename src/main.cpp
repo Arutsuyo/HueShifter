@@ -1,5 +1,6 @@
 #ifdef _WIN32
 #define APIENTRY __stdcall
+#pragma warning(disable: 4514)
 #include "glad/glad.h"
 extern "C"
 {
