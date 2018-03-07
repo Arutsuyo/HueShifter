@@ -15,7 +15,6 @@ extern "C"
 
 #include <iostream>
 
-
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -29,30 +28,43 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(void)
 {
     // Creation
-    GLFWwindow* window;
+    GLFWwindow* image_window;
+	GLFWwindow* tool_window;
+
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         exit(EXIT_FAILURE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
-    if (!window)
+    image_window = glfwCreateWindow(900, 600, "HueShifter", NULL, NULL);
+	tool_window = glfwCreateWindow(300, 600, "Tools", NULL, NULL);
+
+    if (!image_window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
-    glfwSetKeyCallback(window, key_callback);
-    glfwMakeContextCurrent(window);
+    glfwSetKeyCallback(image_window, key_callback);
+    glfwMakeContextCurrent(image_window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
 
+	if (!tool_window)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+    glfwSetKeyCallback(image_window, key_callback);
+    glfwMakeContextCurrent(image_window);
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    glfwSwapInterval(1); // v-sync
     
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(image_window))
     {
         // General
         float ratio;
         int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
+        glfwGetFramebufferSize(image_window, &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -62,10 +74,11 @@ int main(void)
 
 
         // Get events and swap
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(image_window);
         glfwPollEvents();
     }
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(image_window);
+	glfwDestroyWindow(tool_window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
