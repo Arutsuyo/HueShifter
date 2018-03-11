@@ -21,17 +21,17 @@ void RenderObject::render()
     glBegin(GL_QUADS);
 
     // texture draw points
-    int w[] = { 0, 0, 1, 1 };
-    int h[] = { 0, 1, 1, 0};
+    int w[] = { 0, 1, 1, 0 };
+    int h[] = { 1, 1, 0, 0};
 
-    glTexCoord2d(0, 0);
+    glTexCoord2d(w[0], h[0]);
     glVertex2d(loc.x1, loc.y1);
-    glTexCoord2d(0, 1);
-    glVertex2d(loc.x1, loc.y2);
-    glTexCoord2d(1, 1);
-    glVertex2d(loc.x2, loc.y2);
-    glTexCoord2d(1, 0);
+    glTexCoord2d(w[1], h[1]);
     glVertex2d(loc.x2, loc.y1);
+    glTexCoord2d(w[2], h[2]);
+    glVertex2d(loc.x2, loc.y2);
+    glTexCoord2d(w[3], h[3]);
+    glVertex2d(loc.x1, loc.y2);
 
     glEnd();
     glDisable(GL_TEXTURE_2D);

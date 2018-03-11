@@ -19,7 +19,8 @@ extern "C"
 
 typedef struct 
 {
-    int x1, x2, y1, y2;
+    //  Left    Right   Bottom  Top
+    int x1,     x2,     y1,     y2;
 } Quad;
 
 class RenderObject

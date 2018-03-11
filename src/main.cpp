@@ -34,9 +34,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-int main(void)
+GLFWwindow* CreateWindow()
 {
-    // Creation
     GLFWwindow* window;
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -53,7 +52,45 @@ int main(void)
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
+    assert(glGetError() == GL_NO_ERROR);    return window;
+}
+
+void PreDraw()
+{
+    glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    //      left    right       bottom  top         near    far
+    glOrtho(0.0f,   WIN_WIDTH,  0,      WIN_HEIGHT, -1.0f,  1.0f);
     assert(glGetError() == GL_NO_ERROR);
+    //glDisable(GL_CULL_FACE);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+void testDraws()
+{
+    glColor3f(0.0, 1.0, 0.0);
+    glBegin(GL_POLYGON);
+    glVertex3f(0.0, 0.0, 0.0);
+    glVertex3f(190.0, 0.0, 0.0);
+    glVertex3f(190.0, 190.0, 0.0);
+    glVertex3f(0.0, 190.0, 0.0);
+    glEnd();
+
+    glColor3f(1.0, 0.0, 0.0);
+    glPointSize(200);
+    glBegin(GL_POINTS);
+    glVertex2f(200.0, 200.0);
+    glEnd();
+    glPointSize(1);
+}
+
+int main(void)
+{
+    // Creation
+    GLFWwindow* window = CreateWindow();
 
     vector<RenderObject*> renderTargets;
 
@@ -72,26 +109,19 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         // General
-        float ratio;
-        int width, height;
-        glViewport(0, 0, WIN_HEIGHT, WIN_HEIGHT);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-        //      left    right       bottom      top     near    far
-        glOrtho(0.0f,   WIN_WIDTH,  WIN_HEIGHT, 0,      -1.0f,   1.0f);
-        /*glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float)height;*/
-        assert(glGetError() == GL_NO_ERROR);
-        glDisable(GL_CULL_FACE);
+        PreDraw();
+
         // Draw
+        
         for (int i = renderTargets.size() - 1; i >= 0; i--)
             renderTargets[i]->render();
 
-        // Get events and swap
+        //testDraws();
+
+        // Error check
         assert(glGetError() == GL_NO_ERROR);
-        glPopMatrix();
+
+        // Get events and swap
         glFlush();
         glfwSwapBuffers(window);
         glfwPollEvents();
