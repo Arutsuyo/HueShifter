@@ -52,7 +52,8 @@ GLFWwindow* CreateWindow()
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
-    assert(glGetError() == GL_NO_ERROR);    return window;
+    assert(glGetError() == GL_NO_ERROR);
+    return window;
 }
 
 void PreDraw()
