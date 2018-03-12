@@ -6,7 +6,7 @@ using namespace std;
 Arguments: Quad loc [in]
 loc: Quad location for the texture to be rendered. x1 < x2, y1 < y2
 */
-RenderObject::RenderObject(Quad renderLocation) : loc(renderLocation)
+RenderObject::RenderObject()
 {
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, &tex);

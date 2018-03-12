@@ -21,8 +21,8 @@ extern "C"
 #include "image.h"
 using namespace std;
 
-#define WIN_WIDTH 1600
-#define WIN_HEIGHT 900
+int WIN_WIDTH = 1;
+int WIN_HEIGHT = 1;
 
 static void error_callback(int error, const char* description)
 {
@@ -34,25 +34,29 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-GLFWwindow* CreateWindow()
+GLFWwindow* CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
 {
-    GLFWwindow* window;
-    glfwSetErrorCallback(error_callback);
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
+	glfwSetErrorCallback(error_callback);
+	if (!glfwInit()) 
+	{
+		exit(EXIT_FAILURE);
+	}
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Simple example", NULL, NULL);
-    if (!window)
+    image_window = glfwCreateWindow(WIN_HEIGHT, WIN_WIDTH, "HueShifter", NULL, NULL);
+	tool_window = glfwCreateWindow(400, 200, "Tools", NULL, NULL);
+    if (!image_window || !tool_window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
-    glfwSetKeyCallback(window, key_callback);
-    glfwMakeContextCurrent(window);
+    glfwSetKeyCallback(image_window, key_callback);
+	glfwSetKeyCallback(tool_window, key_callback);
+    glfwMakeContextCurrent(image_window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
-    assert(glGetError() == GL_NO_ERROR);    return window;
+
+    assert(glGetError() == GL_NO_ERROR);
 }
 
 void PreDraw()
@@ -89,30 +93,21 @@ void testDraws()
 
 int main(void)
 {
-    // Creation
-    GLFWwindow* window = CreateWindow();
-
-    vector<RenderObject*> renderTargets;
-
-    Quad q1 = { 0, 200, 0, 200 };
-    Image tester1(q1, "wetsuit.jpg");
-    Quad q2 = { 0, 400, 0, 400 };
-    Image tester2(q2, "wetsuit.jpg");
-    Quad q3 = { 0, 600, 0, 600 };
-    Image tester3(q3, "wetsuit.jpg");
-    assert(glGetError() == GL_NO_ERROR);
-
-    renderTargets.push_back(&tester1);
-    renderTargets.push_back(&tester2);
-    renderTargets.push_back(&tester3);
-
-    while (!glfwWindowShouldClose(window))
+	GLFWwindow* image_window;
+	GLFWwindow* tool_window;
+	CreateWindows(image_window, tool_window);
+	// Prompt user to choose a file
+	vector<RenderObject*> renderTargets;
+	Image image("wetsuit.jpg");
+	WIN_WIDTH = image.getWidth();
+	WIN_HEIGHT = image.getHeight();
+	glfwSetWindowSize(image_window, WIN_WIDTH, WIN_HEIGHT);
+    while (!glfwWindowShouldClose(image_window))
     {
         // General
         PreDraw();
 
         // Draw
-        
         for (int i = renderTargets.size() - 1; i >= 0; i--)
             renderTargets[i]->render();
 
@@ -123,10 +118,11 @@ int main(void)
 
         // Get events and swap
         glFlush();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(image_window);
         glfwPollEvents();
     }
-    glfwDestroyWindow(window);
+
+    glfwDestroyWindow(image_window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }

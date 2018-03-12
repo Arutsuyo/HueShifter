@@ -26,7 +26,7 @@ typedef struct
 class RenderObject
 {
 public:
-    RenderObject(Quad renderLocation);
+    RenderObject();
     ~RenderObject();
 
     virtual void render();

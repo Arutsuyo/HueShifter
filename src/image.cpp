@@ -5,7 +5,7 @@
 #include "image.h"
 using namespace std;
 
-Image::Image(Quad renderLocation, std::string imageName) : RenderObject(renderLocation)
+Image::Image(std::string imageName) : RenderObject()
 {
     iType = imageName.substr(imageName.length() - 4);
     iName = imageName.substr(0, imageName.length() - 4);
@@ -15,7 +15,7 @@ Image::Image(Quad renderLocation, std::string imageName) : RenderObject(renderLo
         cerr << "Error: Image failed to load: " << imageName << endl;
     
     cout << "Image: " << iName << " Width: " << iwidth << " height: " << iheight << endl;
-
+	loc = {0, iwidth, 0, iheight};
     glEnable(GL_TEXTURE_2D);
     if (cmp == 3)
     {
@@ -48,6 +48,16 @@ void Image::dumpImage()
 {
     string temp = iName + ".png";
     stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth);
+}
+
+int Image::getWidth()
+{
+	return iwidth;
+}
+
+int Image::getHeight()
+{
+	return iheight;
 }
 
 Image::~Image()
