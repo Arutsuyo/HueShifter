@@ -80,7 +80,7 @@ void PreDraw()
 void newCursor(double x, double y, GLFWwindow* window)
 {
 	unsigned int color;
-	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+	glReadnPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, sizeof(char) * 4, &color);
 	unsigned char pixels[16 * 16 * 4];
 	memset(pixels, color, sizeof(pixels));
 	GLFWimage image;
