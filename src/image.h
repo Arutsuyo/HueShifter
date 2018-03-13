@@ -24,10 +24,12 @@ extern "C"
 class Image: public RenderObject
 {
 public:
-    Image(Quad renderLocation, std::string imageName);
+    Image(std::string imageName);
     ~Image();
 
     void dumpImage();
+	int getWidth();
+	int getHeight();
 
 private:
     int iwidth;

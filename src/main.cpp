@@ -21,8 +21,12 @@ extern "C"
 #include "image.h"
 using namespace std;
 
-#define WIN_WIDTH 1600
-#define WIN_HEIGHT 900
+int WIN_WIDTH = 1;
+int WIN_HEIGHT = 1;
+
+// Master Objects
+vector<RenderObject*> renderTargets;
+GLFWcursor* g_cursor = nullptr;
 
 static void error_callback(int error, const char* description)
 {
@@ -34,25 +38,38 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-GLFWwindow* CreateWindow()
+void assertGLError()
 {
-    GLFWwindow* window;
-    glfwSetErrorCallback(error_callback);
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
+    if (glGetError() == GL_NO_ERROR)
+    {
+        assert(true);
+    }
+    
+}
+
+GLFWwindow* CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
+{
+	glfwSetErrorCallback(error_callback);
+	if (!glfwInit()) 
+	{
+		exit(EXIT_FAILURE);
+	}
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "Simple example", NULL, NULL);
-    if (!window)
+    image_window = glfwCreateWindow(WIN_HEIGHT, WIN_WIDTH, "HueShifter", NULL, NULL);
+	tool_window = glfwCreateWindow(400, 200, "Tools", NULL, NULL);
+    if (!image_window || !tool_window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
-    glfwSetKeyCallback(window, key_callback);
-    glfwMakeContextCurrent(window);
+    glfwSetKeyCallback(image_window, key_callback);
+	glfwSetKeyCallback(tool_window, key_callback);
+    glfwMakeContextCurrent(image_window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
-    assert(glGetError() == GL_NO_ERROR);    return window;
+
+    assertGLError();
 }
 
 void PreDraw()
@@ -63,10 +80,57 @@ void PreDraw()
     glLoadIdentity();
     //      left    right       bottom  top         near    far
     glOrtho(0.0f,   WIN_WIDTH,  0,      WIN_HEIGHT, -1.0f,  1.0f);
-    assert(glGetError() == GL_NO_ERROR);
+    assertGLError();
     //glDisable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+void newCursor(double x, double y, GLFWwindow* window)
+{
+	unsigned int color;
+	glReadPixels(x, WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+	cout << "COLOR: " << hex << color << endl;
+	unsigned int pixels[16 * 16];
+    for (int i = 0; i < 16*16; i += 4)
+    {
+        pixels[i] = pixels[i+1] = pixels[i+2] = pixels[i+3] = color;
+    }
+	GLFWimage image;
+	image.width = 16;
+	image.height = 16;
+	image.pixels = (unsigned char*)pixels;
+	g_cursor = glfwCreateCursor(&image, 0, 0);
+	glfwSetCursor(window, g_cursor);
+}
+
+void deleteCursor()
+{
+	glfwDestroyCursor(g_cursor);
+	g_cursor = nullptr;
+}
+
+void handleCursor(GLFWwindow* window)
+{
+	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	if (state == GLFW_RELEASE)
+	{
+		if (g_cursor != nullptr)
+			cout << "DEL CURSOR" << endl;
+			deleteCursor();
+		return;
+	}
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	cout << "DB:: Window: " << window << " | Cursor Pos: " << xpos << " " << ypos << endl;
+	for (int i = renderTargets.size() - 1; i >= 0; i--)
+	{
+		if (renderTargets[i]->hovering(xpos, ypos))
+		{
+			newCursor(xpos, ypos, window);
+			return;
+		}
+	}
 }
 
 void testDraws()
@@ -89,44 +153,40 @@ void testDraws()
 
 int main(void)
 {
-    // Creation
-    GLFWwindow* window = CreateWindow();
-
-    vector<RenderObject*> renderTargets;
-
-    Quad q1 = { 0, 200, 0, 200 };
-    Image tester1(q1, "wetsuit.jpg");
-    Quad q2 = { 0, 400, 0, 400 };
-    Image tester2(q2, "wetsuit.jpg");
-    Quad q3 = { 0, 600, 0, 600 };
-    Image tester3(q3, "wetsuit.jpg");
-    assert(glGetError() == GL_NO_ERROR);
-
-    renderTargets.push_back(&tester1);
-    renderTargets.push_back(&tester2);
-    renderTargets.push_back(&tester3);
-
-    while (!glfwWindowShouldClose(window))
+	GLFWwindow* image_window;
+	GLFWwindow* tool_window;
+	CreateWindows(image_window, tool_window);
+	// Prompt user to choose a file
+	Image image("image.png");
+	WIN_WIDTH = image.getWidth();
+	WIN_HEIGHT = image.getHeight();
+	renderTargets.push_back(&image);
+	glfwSetWindowSize(image_window, WIN_WIDTH, WIN_HEIGHT);
+    while (!glfwWindowShouldClose(image_window))
     {
         // General
         PreDraw();
 
         // Draw
-        
         for (int i = renderTargets.size() - 1; i >= 0; i--)
             renderTargets[i]->render();
+
+		assertGLError();
+
+		handleCursor(image_window);
 
         //testDraws();
 
         // Error check
-        assert(glGetError() == GL_NO_ERROR);
+        assertGLError();
 
         // Get events and swap
         glFlush();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(image_window);
         glfwPollEvents();
     }
-    glfwDestroyWindow(window);
+
+    glfwDestroyWindow(image_window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }

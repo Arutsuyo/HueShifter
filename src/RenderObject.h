@@ -26,12 +26,15 @@ typedef struct
 class RenderObject
 {
 public:
-    RenderObject(Quad renderLocation);
+    RenderObject();
     ~RenderObject();
 
     virtual void render();
+	virtual bool hovering(double x, double y);
+	virtual void slide(int x, int y);
 
 protected:
+	bool interactable;
     Quad loc;
     GLuint tex;
 };

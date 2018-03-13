@@ -2,20 +2,25 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_ONLY_JPEG
 #define STBI_ONLY_PNG
+#include <assert.h>
 #include "image.h"
 using namespace std;
 
-Image::Image(Quad renderLocation, std::string imageName) : RenderObject(renderLocation)
+Image::Image(std::string imageName) : RenderObject()
 {
+	interactable = true;
     iType = imageName.substr(imageName.length() - 4);
     iName = imageName.substr(0, imageName.length() - 4);
     cout << "loading image type: " << iType << endl;
     data = stbi_load(imageName.c_str(), &iwidth, &iheight, &cmp, 0);
     if (data == NULL)
+    {
         cerr << "Error: Image failed to load: " << imageName << endl;
+        assert(true);
+    }
     
     cout << "Image: " << iName << " Width: " << iwidth << " height: " << iheight << endl;
-
+	loc = {0, iwidth, 0, iheight};
     glEnable(GL_TEXTURE_2D);
     if (cmp == 3)
     {
@@ -48,6 +53,16 @@ void Image::dumpImage()
 {
     string temp = iName + ".png";
     stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth);
+}
+
+int Image::getWidth()
+{
+	return iwidth;
+}
+
+int Image::getHeight()
+{
+	return iheight;
 }
 
 Image::~Image()
