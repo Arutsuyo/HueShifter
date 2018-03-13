@@ -8,6 +8,7 @@ loc: Quad location for the texture to be rendered. x1 < x2, y1 < y2
 */
 RenderObject::RenderObject()
 {
+	interactable = true;
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, &tex);
     
@@ -35,6 +36,19 @@ void RenderObject::render()
 
     glEnd();
     glDisable(GL_TEXTURE_2D);
+}
+
+bool RenderObject::hovering(double x, double y)
+{
+	return interactable;
+}
+
+void RenderObject::slide(int x, int y)
+{
+	loc.x1 += x;
+	loc.x2 += x;
+	loc.y1 += y;
+	loc.y2 += y;
 }
 
 RenderObject::~RenderObject()

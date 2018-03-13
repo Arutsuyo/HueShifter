@@ -24,6 +24,10 @@ using namespace std;
 int WIN_WIDTH = 1;
 int WIN_HEIGHT = 1;
 
+// Master Objects
+vector<RenderObject*> renderTargets;
+GLFWcursor* g_cursor;
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -73,6 +77,51 @@ void PreDraw()
     glColor3f(1.0f, 1.0f, 1.0f);
 }
 
+void newCursor(double x, double y, GLFWwindow* window)
+{
+	unsigned int color;
+	glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+	unsigned char pixels[16 * 16 * 4];
+	memset(pixels, color, sizeof(pixels));
+	GLFWimage image;
+	cout << "color: " << color << endl;
+	image.width = 16;
+	image.height = 16;
+	image.pixels = pixels;
+	g_cursor = glfwCreateCursor(&image, 0, 0);
+	glfwSetCursor(window, g_cursor);
+}
+
+void deleteCursor()
+{
+	glfwDestroyCursor(g_cursor);
+	g_cursor = nullptr;
+}
+
+void handleCursor(GLFWwindow* window)
+{
+	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+	if (state == GLFW_RELEASE)
+	{
+		if (g_cursor != nullptr)
+			cout << "DEL CURSOR" << endl;
+			deleteCursor();
+		return;
+	}
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	cout << "DB:: Window: " << window << " | Cursor Pos: " << xpos << " " << ypos << endl;
+	for (int i = renderTargets.size() - 1; i >= 0; i--)
+	{
+		if (renderTargets[i]->hovering(xpos, ypos))
+		{
+			newCursor(xpos, ypos, window);
+			cout << "NEW CURSOR" << endl;
+			return;
+		}
+	}
+}
+
 void testDraws()
 {
     glColor3f(0.0, 1.0, 0.0);
@@ -97,10 +146,10 @@ int main(void)
 	GLFWwindow* tool_window;
 	CreateWindows(image_window, tool_window);
 	// Prompt user to choose a file
-	vector<RenderObject*> renderTargets;
 	Image image("wetsuit.jpg");
 	WIN_WIDTH = image.getWidth();
 	WIN_HEIGHT = image.getHeight();
+	renderTargets.push_back(&image);
 	glfwSetWindowSize(image_window, WIN_WIDTH, WIN_HEIGHT);
     while (!glfwWindowShouldClose(image_window))
     {
@@ -110,6 +159,10 @@ int main(void)
         // Draw
         for (int i = renderTargets.size() - 1; i >= 0; i--)
             renderTargets[i]->render();
+
+		assert(glGetError() == GL_NO_ERROR);
+
+		handleCursor(image_window);
 
         //testDraws();
 

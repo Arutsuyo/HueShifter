@@ -30,8 +30,11 @@ public:
     ~RenderObject();
 
     virtual void render();
+	virtual bool hovering(double x, double y);
+	virtual void slide(int x, int y);
 
 protected:
+	bool interactable;
     Quad loc;
     GLuint tex;
 };
