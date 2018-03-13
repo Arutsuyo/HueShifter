@@ -7,6 +7,7 @@ using namespace std;
 
 Image::Image(std::string imageName) : RenderObject()
 {
+	interactable = true;
     iType = imageName.substr(imageName.length() - 4);
     iName = imageName.substr(0, imageName.length() - 4);
     cout << "loading image type: " << iType << endl;

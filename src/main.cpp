@@ -26,7 +26,7 @@ int WIN_HEIGHT = 1;
 
 // Master Objects
 vector<RenderObject*> renderTargets;
-GLFWcursor* g_cursor;
+GLFWcursor* g_cursor = nullptr;
 
 static void error_callback(int error, const char* description)
 {
@@ -80,7 +80,8 @@ void PreDraw()
 void newCursor(double x, double y, GLFWwindow* window)
 {
 	unsigned int color;
-	glReadnPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, sizeof(char) * 4, &color);
+	glReadPixels(x, WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+	cout << "COLOR: " << color << endl;
 	unsigned char pixels[16 * 16 * 4];
 	memset(pixels, color, sizeof(pixels));
 	GLFWimage image;
@@ -116,7 +117,6 @@ void handleCursor(GLFWwindow* window)
 		if (renderTargets[i]->hovering(xpos, ypos))
 		{
 			newCursor(xpos, ypos, window);
-			cout << "NEW CURSOR" << endl;
 			return;
 		}
 	}
@@ -146,7 +146,7 @@ int main(void)
 	GLFWwindow* tool_window;
 	CreateWindows(image_window, tool_window);
 	// Prompt user to choose a file
-	Image image("wetsuit.jpg");
+	Image image("image.png");
 	WIN_WIDTH = image.getWidth();
 	WIN_HEIGHT = image.getHeight();
 	renderTargets.push_back(&image);

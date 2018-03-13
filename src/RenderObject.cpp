@@ -8,7 +8,7 @@ loc: Quad location for the texture to be rendered. x1 < x2, y1 < y2
 */
 RenderObject::RenderObject()
 {
-	interactable = true;
+	interactable = false;
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, &tex);
     
