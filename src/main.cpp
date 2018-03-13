@@ -90,17 +90,15 @@ void newCursor(double x, double y, GLFWwindow* window)
 {
 	unsigned int color;
 	glReadPixels(x, WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
-	memset(pixels, color, sizeof(pixels));
-	cout << "COLOR: " << hex << color << endl;
-	cout << "COLOR: " << hex << color << endl;
-	unsigned int pixels[16 * 16];
-    for (int i = 0; i < 16*16; i += 4)
+	cout << "COLOR: " << hex << color << " POS: " << x << " " << y << endl;
+	unsigned int pixels[24 * 24];
+    for (int i = 0; i < 24 * 24; i += 4)
     {
         pixels[i] = pixels[i+1] = pixels[i+2] = pixels[i+3] = color;
     }
 	GLFWimage image;
-	image.width = 16;
-	image.height = 16;
+	image.width = 24;
+	image.height = 24;
 	image.pixels = (unsigned char*)pixels;
 	g_cursor = glfwCreateCursor(&image, 0, 0);
 	glfwSetCursor(window, g_cursor);
@@ -124,7 +122,6 @@ void handleCursor(GLFWwindow* window)
 	}
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
-	cout << "DB:: Window: " << window << " | Cursor Pos: " << xpos << " " << ypos << endl;
 	for (int i = renderTargets.size() - 1; i >= 0; i--)
 	{
 		if (renderTargets[i]->hovering(xpos, ypos))
