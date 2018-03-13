@@ -90,6 +90,8 @@ void newCursor(double x, double y, GLFWwindow* window)
 {
 	unsigned int color;
 	glReadPixels(x, WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+	memset(pixels, color, sizeof(pixels));
+	cout << "COLOR: " << hex << color << endl;
 	cout << "COLOR: " << hex << color << endl;
 	unsigned int pixels[16 * 16];
     for (int i = 0; i < 16*16; i += 4)
