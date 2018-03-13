@@ -38,6 +38,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+void assertGLError()
+{
+    if (glGetError() == GL_NO_ERROR)
+    {
+        assert(true);
+    }
+    
+}
+
 GLFWwindow* CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
 {
 	glfwSetErrorCallback(error_callback);
@@ -60,7 +69,7 @@ GLFWwindow* CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
 
-    assert(glGetError() == GL_NO_ERROR);
+    assertGLError();
 }
 
 void PreDraw()
@@ -71,7 +80,7 @@ void PreDraw()
     glLoadIdentity();
     //      left    right       bottom  top         near    far
     glOrtho(0.0f,   WIN_WIDTH,  0,      WIN_HEIGHT, -1.0f,  1.0f);
-    assert(glGetError() == GL_NO_ERROR);
+    assertGLError();
     //glDisable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -81,14 +90,16 @@ void newCursor(double x, double y, GLFWwindow* window)
 {
 	unsigned int color;
 	glReadPixels(x, WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
-	cout << "COLOR: " << color << endl;
-	unsigned char pixels[16 * 16 * 4];
-	memset(pixels, color, sizeof(pixels));
+	cout << "COLOR: " << hex << color << endl;
+	unsigned int pixels[16 * 16];
+    for (int i = 0; i < 16*16; i += 4)
+    {
+        pixels[i] = pixels[i+1] = pixels[i+2] = pixels[i+3] = color;
+    }
 	GLFWimage image;
-	cout << "color: " << color << endl;
 	image.width = 16;
 	image.height = 16;
-	image.pixels = pixels;
+	image.pixels = (unsigned char*)pixels;
 	g_cursor = glfwCreateCursor(&image, 0, 0);
 	glfwSetCursor(window, g_cursor);
 }
@@ -160,14 +171,14 @@ int main(void)
         for (int i = renderTargets.size() - 1; i >= 0; i--)
             renderTargets[i]->render();
 
-		assert(glGetError() == GL_NO_ERROR);
+		assertGLError();
 
 		handleCursor(image_window);
 
         //testDraws();
 
         // Error check
-        assert(glGetError() == GL_NO_ERROR);
+        assertGLError();
 
         // Get events and swap
         glFlush();
