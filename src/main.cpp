@@ -19,6 +19,7 @@ extern "C"
 #include <assert.h>
 #include "RenderObject.h"
 #include "image.h"
+#define CUR_SIZE 24
 using namespace std;
 
 int WIN_WIDTH = 1;
@@ -91,14 +92,14 @@ void newCursor(double x, double y, GLFWwindow* window)
 	unsigned int color;
 	glReadPixels(x, WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
 	cout << "COLOR: " << hex << color << endl;
-	unsigned int pixels[16 * 16];
-    for (int i = 0; i < 16*16; i += 4)
+	unsigned int pixels[CUR_SIZE * CUR_SIZE];
+    for (int i = 0; i < CUR_SIZE * CUR_SIZE; i += 4)
     {
         pixels[i] = pixels[i+1] = pixels[i+2] = pixels[i+3] = color;
     }
 	GLFWimage image;
-	image.width = 16;
-	image.height = 16;
+	image.width = CUR_SIZE;
+	image.height = CUR_SIZE;
 	image.pixels = (unsigned char*)pixels;
 	g_cursor = glfwCreateCursor(&image, 0, 0);
 	glfwSetCursor(window, g_cursor);
