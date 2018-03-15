@@ -39,14 +39,16 @@ void Slider::setx(int x)
     Quad ploc = point.getQuad();
     Quad bloc = bar.getQuad();
     int w = ploc.x2 - ploc.x1;
-    ploc.x1 = x - w/2 <= bloc.x1 - w / 2 ? 
+    ploc.x1 = x - w / 2 <= bloc.x1 - w / 2 ? 
         bloc.x1 - w / 2
         : x - w / 2 >= bloc.x2 - w/2 ? 
             bloc.x2 - w / 2 
             : x - w / 2;
     ploc.x2 = ploc.x1 + w;
     point.setQuad(ploc);
+#ifndef NDEBUG
     cout << "Bar: " << bar.getName() << " Value: " << getSliderValue() << endl;
+#endif
 }
 
 float Slider::getSliderValue()

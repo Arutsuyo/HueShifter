@@ -11,20 +11,24 @@ Image::Image(std::string imageName) : RenderObject()
     interactable = true;
     int lastSlash = imageName.find_last_of('/');
     iName = imageName.substr(
-        lastSlash == string::npos ? 0 : lastSlash + 1, 
+        lastSlash == string::npos ? 0 : lastSlash + 1,
         imageName.length() - 4);
     iType = imageName.substr(imageName.length() - 3);
+#ifndef NDEBUG
     cout << "loading image name: " << iName << endl;
     cout << "loading image type: " << iType << endl;
+#endif
     data = stbi_load(imageName.c_str(), &iwidth, &iheight, &cmp, 0);
     if (data == NULL)
     {
         cerr << "Error: Image failed to load: " << imageName << endl;
         assert(true);
     }
-    
+
+#ifndef NDEBUG
     cout << "Width: " << iwidth << " Height: " << iheight << endl;
-	loc = {0, iwidth, 0, iheight};
+#endif
+    loc = { 0, iwidth, 0, iheight };
     glEnable(GL_TEXTURE_2D);
     if (cmp == 3)
     {
@@ -56,7 +60,7 @@ Image::Image(std::string imageName) : RenderObject()
         assert(true);
     }
 }
-    
+
 void Image::dumpImage()
 {
     string temp = iName + "Dump.png";
@@ -65,12 +69,12 @@ void Image::dumpImage()
 
 int Image::getWidth()
 {
-	return iwidth;
+    return iwidth;
 }
 
 int Image::getHeight()
 {
-	return iheight;
+    return iheight;
 }
 
 void Image::setInteractable(bool inter)
@@ -84,10 +88,12 @@ void Image::scale(float xs, float ys)
     loc.y2 = loc.y1 + iheight / ys;
 }
 
+#ifndef NDEBUG
 string Image::getName()
 {
     return iName;
 }
+#endif
 
 char Image::button()
 {

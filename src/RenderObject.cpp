@@ -9,10 +9,10 @@ loc: Quad location for the texture to be rendered. x1 < x2, y1 < y2
 */
 RenderObject::RenderObject()
 {
-	interactable = false;
+    interactable = false;
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, &tex);
-    
+
     glDisable(GL_TEXTURE_2D);
 }
 
@@ -26,7 +26,7 @@ void RenderObject::render()
 
     // texture draw points
     int w[] = { 0, 1, 1, 0 };
-    int h[] = { 1, 1, 0, 0};
+    int h[] = { 1, 1, 0, 0 };
 
     glTexCoord2d(w[0], h[0]);
     glVertex2d(loc.x1, loc.y1);
@@ -49,7 +49,7 @@ void RenderObject::render()
 
 bool RenderObject::hovering(double x, double y)
 {
-    if (interactable 
+    if (interactable
         && x > loc.x1
         && x < loc.x2
         && y > loc.y1

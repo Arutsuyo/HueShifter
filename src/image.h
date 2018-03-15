@@ -21,18 +21,20 @@ extern "C"
 }
 #endif // Unix
 
-class Image: public RenderObject
+class Image : public RenderObject
 {
 public:
     Image(std::string imageName);
     ~Image();
 
     void dumpImage();
-	int getWidth();
-	int getHeight();
+    int getWidth();
+    int getHeight();
     void setInteractable(bool inter);
     void scale(float xs, float ys);
+#ifndef NDEBUG
     std::string getName();
+#endif
     char button();
 
     void resetImageData();

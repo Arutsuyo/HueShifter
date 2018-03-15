@@ -48,26 +48,28 @@ static void esc_key_callback(GLFWwindow* window, int key, int scancode, int acti
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+#ifndef NDEBUG
 void assertGLError()
 {
     if (glGetError() == GL_NO_ERROR)
     {
         assert(true);
     }
-    
+
 }
+#endif
 
 void CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
 {
-	if (!glfwInit()) 
-	{
-		exit(EXIT_FAILURE);
-	}
+    if (!glfwInit())
+    {
+        exit(EXIT_FAILURE);
+    }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     image_window = glfwCreateWindow(IMAGE_WIN_HEIGHT, IMAGE_WIN_WIDTH, "HueShifter", NULL, NULL);
-	tool_window = glfwCreateWindow(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT, "Tools", NULL, NULL);
+    tool_window = glfwCreateWindow(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT, "Tools", NULL, NULL);
     if (!image_window || !tool_window)
     {
         glfwTerminate();
@@ -76,7 +78,7 @@ void CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
     glfwMakeContextCurrent(tool_window);
     glfwSetErrorCallback(error_callback);
     // FIX THIS
-	glfwSetKeyCallback(tool_window, esc_key_callback);
+    glfwSetKeyCallback(tool_window, esc_key_callback);
 
     glfwMakeContextCurrent(image_window);
     glfwSetErrorCallback(error_callback);
@@ -85,7 +87,9 @@ void CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
 
+#ifndef NDEBUG
     assertGLError();
+#endif
 }
 
 void PreDraw(int w, int h)
@@ -99,46 +103,52 @@ void PreDraw(int w, int h)
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glColor3f(1.0f, 1.0f, 1.0f);
 
+#ifndef NDEBUG
     assertGLError();
+#endif
 }
 
 void newCursorColor(double x, double y, GLFWwindow* window)
 {
-	unsigned int color;
-	glReadPixels(x, IMAGE_WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
-	cout << "COLOR: " << hex << color << endl;
-	unsigned int pixels[CUR_SIZE * CUR_SIZE];
+    unsigned int color;
+    glReadPixels(x, IMAGE_WIN_HEIGHT - y - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
+#ifndef NDEBUG
+    cout << "COLOR: " << hex << color << endl;
+#endif
+    unsigned int pixels[CUR_SIZE * CUR_SIZE];
     for (int i = 0; i < CUR_SIZE * CUR_SIZE; i += 4)
     {
-        pixels[i] = pixels[i+1] = pixels[i+2] = pixels[i+3] = color;
+        pixels[i] = pixels[i + 1] = pixels[i + 2] = pixels[i + 3] = color;
     }
-	GLFWimage image;
-	image.width = CUR_SIZE;
-	image.height = CUR_SIZE;
-	image.pixels = (unsigned char*)pixels;
-	g_cursor = glfwCreateCursor(&image, 0, 0);
-	glfwSetCursor(window, g_cursor);
+    GLFWimage image;
+    image.width = CUR_SIZE;
+    image.height = CUR_SIZE;
+    image.pixels = (unsigned char*)pixels;
+    g_cursor = glfwCreateCursor(&image, 0, 0);
+    glfwSetCursor(window, g_cursor);
 }
 
 void deleteCursorColor()
 {
-	glfwDestroyCursor(g_cursor);
-	g_cursor = nullptr;
+    glfwDestroyCursor(g_cursor);
+    g_cursor = nullptr;
 }
 
 void handleImageWindowInteraction(GLFWwindow* window)
 {
-	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-	if (state == GLFW_RELEASE)
-	{
-		if (g_cursor != nullptr)
-			cout << "DEL CURSOR" << endl;
-			deleteCursorColor();
-		return;
-	}
-	double xpos, ypos;
-	glfwGetCursorPos(window, &xpos, &ypos);
+    int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+    if (state == GLFW_RELEASE)
+    {
+        if (g_cursor != nullptr)
+            cout << "DEL CURSOR" << endl;
+        deleteCursorColor();
+        return;
+    }
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+#ifndef NDEBUG
     cout << "DB:: Window: " << window << " | Cursor Pos: " << xpos << " " << ypos << endl;
+#endif
     newCursorColor(xpos, ypos, window);
 }
 
@@ -151,7 +161,6 @@ void handleToolWindowInteraction(GLFWwindow* window)
         time_t end;
         time(&end);
         double elapsed = difftime(end, start);
-        cout << "DumpElapsed: " << elapsed << endl;
         if (elapsed > 10)
             timing = false;
     }
@@ -167,12 +176,12 @@ void handleToolWindowInteraction(GLFWwindow* window)
     {
         if (toolButtons[i]->hovering(xpos, ypos))
         {
-            switch(toolButtons[i]->button())
+            switch (toolButtons[i]->button())
             {
             case 'r':
                 imageResetFlag = true;
                 break;
-            case 's' :
+            case 's':
                 if (!timing)
                 {
                     imageDumpFlag = true;
@@ -197,20 +206,17 @@ void handleToolWindowInteraction(GLFWwindow* window)
 
 int main(void)
 {
-    time_t start, end;
-    double elapsed;
-
     // Prompt user to choose a file
 
     // Standard Windows
-	GLFWwindow* image_window;
-	GLFWwindow* tool_window;
-	CreateWindows(image_window, tool_window);
+    GLFWwindow* image_window;
+    GLFWwindow* tool_window;
+    CreateWindows(image_window, tool_window);
 
     // Grab Image to render
-	Image image("image.jpg");
-	IMAGE_WIN_WIDTH = image.getWidth();
-	IMAGE_WIN_HEIGHT = image.getHeight();
+    Image image("image.jpg");
+    IMAGE_WIN_WIDTH = image.getWidth();
+    IMAGE_WIN_HEIGHT = image.getHeight();
 
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
@@ -229,31 +235,35 @@ int main(void)
     refreshIcon.setQuad({ 275, 350, 50, 125 });
     toolButtons.push_back(&refreshIcon);
 
-	glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
+    glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     glfwSetWindowPos(tool_window, 50, 100);
     glfwSetWindowPos(image_window, 500, 100);
 
-    
+
     // Main processing loop
-    while (!glfwWindowShouldClose(image_window) 
+    while (!glfwWindowShouldClose(image_window)
         || !glfwWindowShouldClose(tool_window))
     {
         // Image Window Processing
         glfwMakeContextCurrent(image_window);
         glfwPollEvents();
-        
+
         // General
         PreDraw(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 
         // Draw
         image.render();
 
-		assertGLError();
+#ifndef NDEBUG
+        assertGLError();
+#endif
 
-		handleImageWindowInteraction(image_window);
+        handleImageWindowInteraction(image_window);
 
         // Error check
+#ifndef NDEBUG
         assertGLError();
+#endif
 
         // Flush and swap buffer
         glFlush();
@@ -275,7 +285,9 @@ int main(void)
         for (int i = toolButtons.size() - 1; i >= 0; i--)
             toolButtons[i]->render();
 
+#ifndef NDEBUG
         assertGLError();
+#endif
 
         // Flush and swap buffer
         glFlush();
