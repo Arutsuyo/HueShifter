@@ -12,7 +12,6 @@ RenderObject::RenderObject()
 	interactable = false;
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, &tex);
-    
     glDisable(GL_TEXTURE_2D);
 }
 

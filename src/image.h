@@ -23,17 +23,17 @@ extern "C"
 }
 #endif // Unix
 
-typedef color::rgb<float> rgb_t;
-typedef color::hsl<float> hsl_t;
-typedef std::array< float, 3 > array3d_t;
+typedef color::rgb<uint8_t> rgb_t;
+typedef color::hsl<uint8_t> hsl_t;
+typedef std::array< uint8_t, 3 > pixel_t;
 
 class Image: public RenderObject
 {
 public:
     Image(std::string imageName);
     ~Image();
-	void setIsMain();
-	void generateHSL(int w, int h);
+	void generateHSL();
+	void updateTexture();
 	void setH(int dif);
 	void setS(int dif);
 	void setL(int dif);
@@ -43,6 +43,7 @@ public:
     void getImageWindowSize(int &w, int &h);
     void setInteractable(bool inter);
     void scale(float xs, float ys);
+#ifndef NDEBUG
     std::string getName();
 #endif
     char button();
@@ -61,5 +62,5 @@ private:
     unsigned char *data;
     std::string iType;
     std::string iName;
-	std::vector< array3d_t > HSL_arr;
+	std::vector< pixel_t > HSL_arr;
 };

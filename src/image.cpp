@@ -33,7 +33,7 @@ Image::Image(std::string imageName) : RenderObject()
         cerr << "Error: Image failed to load: " << imageName << endl;
         assert(true);
     }
-    
+#ifndef NDEBUG
     cout << "Width: " << iwidth << " Height: " << iheight << endl;
 #endif
     
@@ -77,17 +77,28 @@ Image::Image(std::string imageName) : RenderObject()
     }
 }
 
-void Image::setIsMain() {
-	is_main = true;
+void Image::generateHSL()
+{
+	if (HSL_arr.size() == 0) {
+		HSL_arr.resize(iheight * iwidth * 3);
+	}
+
+	for (int i = 0; i < iheight * iwidth * cmp; i += cmp) {
+		HSL_arr[i/3][0] = data[i];
+		HSL_arr[i/3][1] = data[i+1];
+		HSL_arr[i/3][2] = data[i+2];
+	}
+
+	auto r = reinterpret_cast<rgb_t *>(HSL_arr.data());
+	auto h = reinterpret_cast<hsl_t *>(HSL_arr.data());
+
+	std::transform(r, r + HSL_arr.size(), h, [](rgb_t const& r) { return hsl_t(r); });
 }
 
-void Image::generateHSL(int w, int h)
+void Image::updateTexture()
 {
-	//HSL_arr = image(w * h);
-	for (int i = 0; i < w; i++) {
-		for (int j = 0; j < h; j++) {
+	for (int i = 0; i < iheight * iwidth * 3; i += 3) {
 
-		}
 	}
 }
 
