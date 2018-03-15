@@ -20,7 +20,9 @@ extern "C"
 #include "RenderObject.h"
 #include "Image.h"
 #include "Slider.h"
+#include "color/color.hpp"
 #define CUR_SIZE 24
+
 using namespace std;
 
 int IMAGE_WIN_WIDTH = 1;
