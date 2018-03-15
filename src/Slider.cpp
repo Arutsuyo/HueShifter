@@ -57,6 +57,8 @@ void Slider::reset()
     Quad place = bar.getQuad();
     place.x1 += (bar.getWidth() / 2) - point.getWidth() / 6;
     place.x2 = place.x1 + point.getWidth() / 3;
+    place.y1 = place.y2 - (place.y2 - place.y1) / 2;
+    place.y2 += point.getHeight() / 4;
     point.setQuad(place);
 }
 

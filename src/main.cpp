@@ -227,19 +227,19 @@ int main(void)
 
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
-    Slider hSlide({ 50, 150, 5, 15 }, "img/H.png", "img/point.png");
-    toolSliders.push_back(&hSlide);
-    Slider lSlide({ 50, 150, 75, 85 }, "img/L.png", "img/point.png");
-    toolSliders.push_back(&lSlide);
-    Slider sSlide({ 50, 150, 145, 155 }, "img/S.png", "img/point.png");
-    toolSliders.push_back(&sSlide);
+    Slider hSlide({ 50, 150, 145, 155 }, "img/H.png", "img/point.png");
+    Slider sSlide({ 50, 150, 75, 85 }, "img/S.png", "img/point.png");
+    Slider lSlide({ 50, 150, 5, 15 }, "img/L.png", "img/point.png");
     Image saveIcon("img/save.png");
-    saveIcon.setInteractable(true);
-    saveIcon.setQuad({ 175, 250, 50, 125 });
-    toolButtons.push_back(&saveIcon);
     Image refreshIcon("img/refresh.png");
+    saveIcon.setInteractable(true);
     refreshIcon.setInteractable(true);
+    saveIcon.setQuad({ 175, 250, 50, 125 });
     refreshIcon.setQuad({ 275, 350, 50, 125 });
+    toolSliders.push_back(&hSlide);
+    toolSliders.push_back(&sSlide);
+    toolSliders.push_back(&lSlide);
+    toolButtons.push_back(&saveIcon);
     toolButtons.push_back(&refreshIcon);
     glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     glfwSetWindowPos(tool_window, 50, 100);
@@ -260,6 +260,7 @@ int main(void)
 
         if (manipulationFlag)
         {
+            image.generateHSL();
             image.setH(hSlide.getSliderValue());
             image.setS(sSlide.getSliderValue());
             image.setL(lSlide.getSliderValue());
