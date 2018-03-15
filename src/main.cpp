@@ -161,6 +161,9 @@ int main(void)
 	IMAGE_WIN_WIDTH = image.getWidth();
 	IMAGE_WIN_HEIGHT = image.getHeight();
 	glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
+    glfwSetWindowPos(tool_window, 50, 100);
+    glfwSetWindowPos(image_window, 500, 100);
+
     
     // Main processing loop
     while (!glfwWindowShouldClose(image_window))
