@@ -6,8 +6,17 @@
 #include "Image.h"
 using namespace std;
 
+int Image::sWidth = -1;
+int Image::sHeight = -1;
+
 Image::Image(std::string imageName) : RenderObject()
 {
+
+#ifndef NDEBUG
+    if (sWidth == -1 || sHeight == -1)
+        cerr << "ERROR: Screen details must be set first" << endl;
+#endif
+
     interactable = true;
     int lastSlash = imageName.find_last_of('/');
     iName = imageName.substr(
@@ -28,7 +37,15 @@ Image::Image(std::string imageName) : RenderObject()
 #ifndef NDEBUG
     cout << "Width: " << iwidth << " Height: " << iheight << endl;
 #endif
-    loc = { 0, iwidth, 0, iheight };
+    
+    loc = { 0, 
+        iwidth > sWidth ? sWidth : iwidth, 
+        0, 
+        iheight > sHeight ? sHeight : iheight};
+    
+    win_width = iwidth > sWidth ? sWidth : iwidth;
+    win_height = iheight > sHeight ? sHeight : iheight;
+
     glEnable(GL_TEXTURE_2D);
     if (cmp == 3)
     {
@@ -77,6 +94,12 @@ int Image::getHeight()
     return iheight;
 }
 
+void Image::getImageWindowSize(int &w, int &h)
+{
+    w = win_width;
+    h = win_height;
+}
+
 void Image::setInteractable(bool inter)
 {
     interactable = inter;
@@ -118,6 +141,12 @@ void Image::resetImageData()
     // Unbind texture
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_TEXTURE_2D);
+}
+
+void Image::SetScreenDetails(int w, int h)
+{
+    sWidth = w - 400;
+    sHeight = h - 400;
 }
 
 Image::~Image()

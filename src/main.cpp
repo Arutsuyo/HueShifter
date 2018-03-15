@@ -204,6 +204,12 @@ void handleToolWindowInteraction(GLFWwindow* window)
     }
 }
 
+void setMaxImage()
+{
+    const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    Image::SetScreenDetails(mode->width, mode->height);
+}
+
 int main(void)
 {
     // Prompt user to choose a file
@@ -214,9 +220,10 @@ int main(void)
     CreateWindows(image_window, tool_window);
 
     // Grab Image to render
+    setMaxImage();
+
     Image image("image.jpg");
-    IMAGE_WIN_WIDTH = image.getWidth();
-    IMAGE_WIN_HEIGHT = image.getHeight();
+    image.getImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);

@@ -30,15 +30,21 @@ public:
     void dumpImage();
     int getWidth();
     int getHeight();
+    void getImageWindowSize(int &w, int &h);
     void setInteractable(bool inter);
     void scale(float xs, float ys);
 #ifndef NDEBUG
     std::string getName();
 #endif
     char button();
-
     void resetImageData();
+
+    static void SetScreenDetails(int w, int h);
 private:
+    static int sWidth;
+    static int sHeight;
+    int win_width;
+    int win_height;
     int iwidth;
     int iheight;
     int cmp;
