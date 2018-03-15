@@ -8,9 +8,17 @@
 
 using namespace std;
 
+int Image::sWidth = -1;
+int Image::sHeight = -1;
+
 Image::Image(std::string imageName) : RenderObject()
 {
-	is_main = false;
+
+#ifndef NDEBUG
+    if (sWidth == -1 || sHeight == -1)
+        cerr << "ERROR: Screen details must be set first" << endl;
+#endif
+
     interactable = true;
     int lastSlash = imageName.find_last_of('/');
     iName = imageName.substr(
@@ -27,7 +35,16 @@ Image::Image(std::string imageName) : RenderObject()
     }
     
     cout << "Width: " << iwidth << " Height: " << iheight << endl;
-	loc = {0, iwidth, 0, iheight};
+#endif
+    
+    loc = { 0, 
+        iwidth > sWidth ? sWidth : iwidth, 
+        0, 
+        iheight > sHeight ? sHeight : iheight};
+    
+    win_width = iwidth > sWidth ? sWidth : iwidth;
+    win_height = iheight > sHeight ? sHeight : iheight;
+
     glEnable(GL_TEXTURE_2D);
     if (cmp == 3)
     {
@@ -102,6 +119,12 @@ int Image::getHeight()
 	return iheight;
 }
 
+void Image::getImageWindowSize(int &w, int &h)
+{
+    w = win_width;
+    h = win_height;
+}
+
 void Image::setInteractable(bool inter)
 {
     interactable = inter;
@@ -116,6 +139,37 @@ void Image::scale(float xs, float ys)
 string Image::getName()
 {
     return iName;
+}
+
+char Image::button()
+{
+    return iName[0];
+}
+
+void Image::resetImageData()
+{
+    // Bind texture we're putting data into
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    // Parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    // Draw to texture
+    glTexImage2D(GL_TEXTURE_2D, 0, cmp_type, iwidth, iheight, 0, cmp_type, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Unbind texture
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void Image::SetScreenDetails(int w, int h)
+{
+    sWidth = w - 400;
+    sHeight = h - 400;
 }
 
 Image::~Image()

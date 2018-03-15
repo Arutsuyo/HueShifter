@@ -157,6 +157,12 @@ void handleSliders(GLFWwindow* window)
     }
 }
 
+void setMaxImage()
+{
+    const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    Image::SetScreenDetails(mode->width, mode->height);
+}
+
 int main(void)
 {
     // Prompt user to choose a file
@@ -166,12 +172,11 @@ int main(void)
 	GLFWwindow* tool_window;
 	CreateWindows(image_window, tool_window);
 
-    // Make objects to render
 	Image image("image.jpg");
-	IMAGE_WIN_WIDTH = image.getWidth();
-	IMAGE_WIN_HEIGHT = image.getHeight();
+    setMaxImage();
 
-    // Slider loading
+    image.getImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
+    // Tool Window loading
     glfwMakeContextCurrent(tool_window);
     Slider hSlide({ 50, 150, 5, 15 }, "img/H.png", "img/point.png");
     toolRenders.push_back(&hSlide);

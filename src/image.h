@@ -38,16 +38,22 @@ public:
 	void setS(int dif);
 	void setL(int dif);
     void dumpImage();
-	int getWidth();
-	int getHeight();
+    int getWidth();
+    int getHeight();
+    void getImageWindowSize(int &w, int &h);
     void setInteractable(bool inter);
     void scale(float xs, float ys);
     std::string getName();
+#endif
+    char button();
+    void resetImageData();
 
-protected: 
-	bool is_main;
-
+    static void SetScreenDetails(int w, int h);
 private:
+    static int sWidth;
+    static int sHeight;
+    int win_width;
+    int win_height;
     int iwidth;
     int iheight;
     int cmp;
