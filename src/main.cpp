@@ -172,9 +172,8 @@ int main(void)
 	GLFWwindow* tool_window;
 	CreateWindows(image_window, tool_window);
 
-	Image image("image.jpg");
+	Image image("image.png");
     setMaxImage();
-
     image.getImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
@@ -189,6 +188,8 @@ int main(void)
     glfwSetWindowPos(tool_window, 50, 100);
     glfwSetWindowPos(image_window, 500, 100);
 
+	image.generateHSL();
+	image.updateTexture();
     
     // Main processing loop
     while (!glfwWindowShouldClose(image_window) 

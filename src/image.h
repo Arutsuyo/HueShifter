@@ -23,9 +23,8 @@ extern "C"
 }
 #endif // Unix
 
-typedef color::rgb<uint8_t> rgb_t;
-typedef color::hsl<uint8_t> hsl_t;
-typedef std::array< uint8_t, 3 > pixel_t;
+typedef color::rgb<std::uint8_t> rgb_t;
+typedef color::hsl<std::uint8_t> hsl_t;
 
 class Image: public RenderObject
 {
@@ -62,5 +61,6 @@ private:
     unsigned char *data;
     std::string iType;
     std::string iName;
-	std::vector< pixel_t > HSL_arr;
+	std::vector< hsl_t > HSL_arr;
+	std::vector< rgb_t > RGB_arr;
 };

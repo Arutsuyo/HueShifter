@@ -77,6 +77,7 @@ Image::Image(std::string imageName) : RenderObject()
     }
 }
 
+
 void Image::generateHSL()
 {
 	if (HSL_arr.size() == 0) {
@@ -93,13 +94,63 @@ void Image::generateHSL()
 	auto h = reinterpret_cast<hsl_t *>(HSL_arr.data());
 
 	std::transform(r, r + HSL_arr.size(), h, [](rgb_t const& r) { return hsl_t(r); });
+	cout << typeid(HSL_arr[0][2]).name();
 }
+
+/*
+void Image::generateHSL()
+{
+	if (HSL_arr.size() == 0) {
+		HSL_arr.resize(iheight * iwidth * 3);
+		RGB_arr.resize(iheight * iwidth * 3);
+	}
+
+	for (int i = 0; i < iheight * iwidth * cmp; i += cmp) {
+
+		typedef array< uint8_t, 3 > array3u8_t; //!< Guarantee by ISO that there be only three consecutive std::uint8_t
+		typedef ::color::rgb< std::uint8_t > rgb_t; //!< Guarantee by design of this library that only array< std::uint8_t, 3 > will be in memory.
+		
+		memset(image.data(), 0x80, 3 * image.size());
+		auto r = reinterpret_cast<rgb_t *>(image.data());
+
+		cout << data[i];
+		rgb_t temp_r = data[i];
+		rgb_t temp_g = data[i+1];
+		rgb_t temp_b = data[i+2];
+
+		//RGB_arr[i] = temp1;
+		//RGB_arr[i+1] = temp2;
+		//RGB_arr[i+2] = temp3;
+	}
+
+	for (int i = 0; i < iheight * iwidth * cmp; i += cmp) {
+
+	}
+}
+*/
 
 void Image::updateTexture()
 {
-	for (int i = 0; i < iheight * iwidth * 3; i += 3) {
+	for (int i = 0; i < iwidth * iheight * cmp; i += cmp) {
+		cout << "DATA TYPE: " << typeid(data[i]).name() << endl;
+		cout << "DATA TYPE: " << typeid(HSL_arr[i / cmp][0]).name() << endl;
 
+		data[i] = HSL_arr[i / cmp][0];
+		data[i+1] = HSL_arr[i / cmp][1];
+		data[i+2] = HSL_arr[i / cmp][2];
 	}
+
+	// Bind texture we're putting data into
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	// Draw to texture
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iwidth, iheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// Unbind texture
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
 }
 
 void Image::setH(int dif)
