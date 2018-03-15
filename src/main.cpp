@@ -18,8 +18,11 @@ extern "C"
 #include <vector>
 #include <assert.h>
 #include "RenderObject.h"
-#include "image.h"
+#include "Image.h"
+#include "Slider.h"
+#include "color/color.hpp"
 #define CUR_SIZE 24
+
 using namespace std;
 
 int IMAGE_WIN_WIDTH = 1;
@@ -28,14 +31,14 @@ int TOOL_WIN_WIDTH = 400;
 int TOOL_WIN_HEIGHT = 200;
 
 // Master Objects
-vector<RenderObject*> toolRenders;
+vector<Slider*> toolRenders;
 GLFWcursor* g_cursor = nullptr;
 
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void esc_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -50,7 +53,7 @@ void assertGLError()
     
 }
 
-GLFWwindow* CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
+void CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
 {
 	if (!glfwInit()) 
 	{
@@ -58,6 +61,7 @@ GLFWwindow* CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
 	}
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     image_window = glfwCreateWindow(IMAGE_WIN_HEIGHT, IMAGE_WIN_WIDTH, "HueShifter", NULL, NULL);
 	tool_window = glfwCreateWindow(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT, "Tools", NULL, NULL);
     if (!image_window || !tool_window)
@@ -65,10 +69,15 @@ GLFWwindow* CreateWindows(GLFWwindow* &image_window, GLFWwindow* &tool_window)
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+    glfwMakeContextCurrent(tool_window);
     glfwSetErrorCallback(error_callback);
-    glfwSetKeyCallback(image_window, key_callback);
-	glfwSetKeyCallback(tool_window, key_callback);
+    // FIX THIS
+	glfwSetKeyCallback(tool_window, esc_key_callback);
+
     glfwMakeContextCurrent(image_window);
+    glfwSetErrorCallback(error_callback);
+    glfwSetKeyCallback(image_window, esc_key_callback);
+
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1); // v-sync
 
@@ -89,7 +98,7 @@ void PreDraw(int w, int h)
     assertGLError();
 }
 
-void newCursor(double x, double y, GLFWwindow* window)
+void newCursorColor(double x, double y, GLFWwindow* window)
 {
 	unsigned int color;
 	glReadPixels(x, IMAGE_WIN_HEIGHT-y-1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &color);
@@ -107,26 +116,125 @@ void newCursor(double x, double y, GLFWwindow* window)
 	glfwSetCursor(window, g_cursor);
 }
 
-void deleteCursor()
+void deleteCursorColor()
 {
 	glfwDestroyCursor(g_cursor);
 	g_cursor = nullptr;
 }
 
-void handleCursor(GLFWwindow* window)
+void handleCursorColor(GLFWwindow* window)
 {
 	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	if (state == GLFW_RELEASE)
 	{
 		if (g_cursor != nullptr)
 			cout << "DEL CURSOR" << endl;
-			deleteCursor();
+			deleteCursorColor();
 		return;
 	}
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
     cout << "DB:: Window: " << window << " | Cursor Pos: " << xpos << " " << ypos << endl;
-    newCursor(xpos, ypos, window);
+    newCursorColor(xpos, ypos, window);
+}
+
+void handleSliders(GLFWwindow* window)
+{
+    int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+    if (state == GLFW_RELEASE)
+        return;
+
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    ypos = TOOL_WIN_HEIGHT - ypos;
+    for (int i = toolRenders.size() - 1; i >= 0; i--)
+    {
+        if (toolRenders[i]->hovering(xpos, ypos))
+        {
+            toolRenders[i]->setx(xpos);
+            return;
+        }
+    }
+}
+
+int main(void)
+{
+    // Prompt user to choose a file
+
+    // Standard Windows
+	GLFWwindow* image_window;
+	GLFWwindow* tool_window;
+	CreateWindows(image_window, tool_window);
+
+    // Make objects to render
+	Image image("image.jpg");
+	IMAGE_WIN_WIDTH = image.getWidth();
+	IMAGE_WIN_HEIGHT = image.getHeight();
+
+    // Slider loading
+    glfwMakeContextCurrent(tool_window);
+    Slider hSlide({ 50, 150, 5, 15 }, "img/H.png", "img/point.png");
+    toolRenders.push_back(&hSlide);
+    Slider lSlide({ 50, 150, 75, 85 }, "img/L.png", "img/point.png");
+    toolRenders.push_back(&lSlide);
+    Slider sSlide({ 50, 150, 145, 155 }, "img/S.png", "img/point.png");
+    toolRenders.push_back(&sSlide);
+
+	glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
+    glfwSetWindowPos(tool_window, 50, 100);
+    glfwSetWindowPos(image_window, 500, 100);
+
+    
+    // Main processing loop
+    while (!glfwWindowShouldClose(image_window) 
+        || !glfwWindowShouldClose(tool_window))
+    {
+        // Image Window Processing
+        glfwMakeContextCurrent(image_window);
+        glfwPollEvents();
+        
+        // General
+        PreDraw(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
+
+        // Draw
+        image.render();
+
+		assertGLError();
+
+		handleCursorColor(image_window);
+
+        // Error check
+        assertGLError();
+
+        // Flush and swap buffer
+        glFlush();
+        glfwSwapBuffers(image_window);
+
+
+        // Tool Window Processing
+        glfwMakeContextCurrent(tool_window);
+        glfwPollEvents();
+
+        // General
+        PreDraw(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT);
+
+        handleSliders(tool_window);
+
+        // Draw
+        for (int i = toolRenders.size() - 1; i >= 0; i--)
+            toolRenders[i]->render();
+
+        assertGLError();
+
+        // Flush and swap buffer
+        glFlush();
+        glfwSwapBuffers(tool_window);
+    }
+
+    glfwDestroyWindow(tool_window);
+    glfwDestroyWindow(image_window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
 
 //void testDraws()
@@ -146,67 +254,3 @@ void handleCursor(GLFWwindow* window)
 //    glEnd();
 //    glPointSize(1);
 //}
-
-int main(void)
-{
-    // Prompt user to choose a file
-
-    // Standard Windows
-	GLFWwindow* image_window;
-	GLFWwindow* tool_window;
-	CreateWindows(image_window, tool_window);
-
-    // Make objects to render
-	Image image("image.jpg");
-	IMAGE_WIN_WIDTH = image.getWidth();
-	IMAGE_WIN_HEIGHT = image.getHeight();
-	glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
-    
-    // Main processing loop
-    while (!glfwWindowShouldClose(image_window))
-    {
-        // Image Window Processing
-        glfwMakeContextCurrent(image_window);
-        glfwPollEvents();
-        
-        // General
-        PreDraw(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
-
-        // Draw
-        image.render();
-
-		assertGLError();
-
-		handleCursor(image_window);
-
-        // Error check
-        assertGLError();
-
-        // Flush and swap buffer
-        glFlush();
-        glfwSwapBuffers(image_window);
-
-
-        // Tool Window Processing
-        glfwMakeContextCurrent(tool_window);
-        glfwPollEvents();
-
-        // General
-        PreDraw(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT);
-
-        // Draw
-        for (int i = toolRenders.size() - 1; i >= 0; i--)
-            toolRenders[i]->render();
-
-        assertGLError();
-
-        // Flush and swap buffer
-        glFlush();
-        glfwSwapBuffers(tool_window);
-    }
-
-    glfwDestroyWindow(tool_window);
-    glfwDestroyWindow(image_window);
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
-}
