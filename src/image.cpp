@@ -4,10 +4,13 @@
 #define STBI_ONLY_PNG
 #include <assert.h>
 #include "Image.h"
+#include "color/color.hpp"
+
 using namespace std;
 
 Image::Image(std::string imageName) : RenderObject()
 {
+	is_main = false;
     interactable = true;
     int lastSlash = imageName.find_last_of('/');
     iName = imageName.substr(
@@ -56,7 +59,33 @@ Image::Image(std::string imageName) : RenderObject()
         assert(true);
     }
 }
-    
+
+void Image::setIsMain() {
+	is_main = true;
+}
+
+void Image::generateHSL(int w, int h)
+{
+	//HSL_arr = image(w * h);
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++) {
+
+		}
+	}
+}
+
+void Image::setH(int dif)
+{
+}
+
+void Image::setS(int dif)
+{
+}
+
+void Image::setL(int diff)
+{
+}
+
 void Image::dumpImage()
 {
     string temp = iName + ".png";
