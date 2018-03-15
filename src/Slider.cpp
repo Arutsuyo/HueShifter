@@ -52,6 +52,14 @@ void Slider::setx(int x)
 #endif
 }
 
+void Slider::reset()
+{
+    Quad place = bar.getQuad();
+    place.x1 += (bar.getWidth() / 2) - point.getWidth() / 6;
+    place.x2 = place.x1 + point.getWidth() / 3;
+    point.setQuad(place);
+}
+
 float Slider::getSliderValue()
 {
     Quad bq = bar.getQuad();

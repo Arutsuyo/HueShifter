@@ -107,7 +107,7 @@ void Image::updateTexture()
 	glBindTexture(GL_TEXTURE_2D, tex);
 
 	// Draw to texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iwidth, iheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, cmp_type, iwidth, iheight, 0, cmp_type, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Unbind texture
@@ -123,17 +123,26 @@ void Image::dumpImage()
 
 void Image::setH(float h)
 {
-
+    for (int i = 0; i < iwidth * iheight; i++)
+    {
+        HSL_arr[i][0] += HSL_arr[i][0] * h;
+    }
 }
 
 void Image::setS(float s)
 {
-
+    for (int i = 0; i < iwidth * iheight; i++)
+    {
+        HSL_arr[i][1] += HSL_arr[i][1] * s;
+    }
 }
 
 void Image::setL(float l)
 {
-
+    for (int i = 0; i < iwidth * iheight; i++)
+    {
+        HSL_arr[i][2] += HSL_arr[i][2] * l;
+    }
 }
 
 int Image::getWidth()
@@ -148,8 +157,8 @@ int Image::getHeight()
 
 void Image::getMaxImageWindowSize(int &w, int &h)
 {
-    w = sWidth;
-    h = sHeight;
+    w = iwidth > sWidth ? sWidth : iwidth;
+    h = iheight > sHeight ? sHeight : iheight;
 }
 
 void Image::setInteractable(bool inter)
@@ -177,6 +186,9 @@ char Image::button()
 
 void Image::resetImageData()
 {
+    memcpy(data, o_data, sizeof(unsigned char) * cmp * iwidth * iheight);
+    HSL_arr.clear();
+    generateHSL();
     // Bind texture we're putting data into
     glBindTexture(GL_TEXTURE_2D, tex);
 

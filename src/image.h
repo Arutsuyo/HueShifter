@@ -34,7 +34,6 @@ public:
 
     // Static call to make sure we don't have a large window
     static void SetScreenDetails(int w, int h);
-    static void getMaxImageWindowSize(int &w, int &h);
 
     // Image manipulation functions
     void generateHSL();
@@ -52,6 +51,7 @@ public:
     void scale(float xs, float ys);
 
     // Tools calls
+    void getMaxImageWindowSize(int &w, int &h);
     void setInteractable(bool inter);
     char button();
     void resetImageData();

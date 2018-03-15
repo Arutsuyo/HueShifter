@@ -208,9 +208,6 @@ void handleToolWindowInteraction(GLFWwindow* window)
 
 void setMaxImage()
 {
-    const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    Image::SetScreenDetails(mode->width, mode->height);
-    Image::getMaxImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 }
 
 int main(void)
@@ -223,9 +220,10 @@ int main(void)
     CreateWindows(image_window, tool_window);
 
     // Grab Image to render
-    setMaxImage();
-
+    const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    Image::SetScreenDetails(mode->width, mode->height);
     Image image("image.png");
+    image.getMaxImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
@@ -260,12 +258,41 @@ int main(void)
         // General
         PreDraw(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 
+        if (manipulationFlag)
+        {
+            image.setH(hSlide.getSliderValue());
+            image.setS(sSlide.getSliderValue());
+            image.setL(lSlide.getSliderValue());
+            image.updateTexture();
+            manipulationFlag = !manipulationFlag;
+        }
+        if (imageDumpFlag)
+        {
+            cout << "Dumping Image!" << endl;
+            image.dumpImage();
+            imageDumpFlag = !imageDumpFlag;
+        }
+        if (imageResetFlag)
+        {
+            cout << "reseting image" << endl;
+            image.resetImageData();
+        }
+
         // Draw
         image.render();
 
 #ifndef NDEBUG
         assertGLError();
 #endif
+
+        if (imageResetFlag)
+        {
+            cout << "reseting image" << endl;
+            hSlide.reset();
+            sSlide.reset();
+            lSlide.reset();
+            imageResetFlag = !imageResetFlag;
+        }
 
         handleImageWindowInteraction(image_window);
 
@@ -287,13 +314,6 @@ int main(void)
         PreDraw(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT);
 
         handleToolWindowInteraction(tool_window);
-        if (manipulationFlag)
-        {
-            image.setH(hSlide.getSliderValue());
-            image.setS(sSlide.getSliderValue());
-            image.setL(lSlide.getSliderValue());
-            image.updateTexture();
-        }
 
         // Draw
         for (int i = toolSliders.size() - 1; i >= 0; i--)
@@ -308,19 +328,6 @@ int main(void)
         // Flush and swap buffer
         glFlush();
         glfwSwapBuffers(tool_window);
-
-        if (imageDumpFlag)
-        {
-            cout << "Dumping Image!" << endl;
-            image.dumpImage();
-            imageDumpFlag = !imageDumpFlag;
-        }
-        if (imageResetFlag)
-        {
-            cout << "reseting image" << endl;
-            image.resetImageData();
-            imageResetFlag = !imageResetFlag;
-        }
     }
 
     glfwDestroyWindow(tool_window);

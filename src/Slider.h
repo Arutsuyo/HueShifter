@@ -30,6 +30,7 @@ public:
     bool hovering(double x, double y);
     void slide(int x, int y);
     void setx(int x);
+    void reset();
     float getSliderValue();
 
 private:
