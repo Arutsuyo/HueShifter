@@ -12,11 +12,7 @@ Slider::Slider(Quad place, std::string barName, std::string pointerName) :
     bar.setQuad(place);
 
     point.setInteractable(true);
-    place.x1 += (bar.getWidth() / 2) - point.getWidth() / 6;
-    place.x2 = place.x1 + point.getWidth() / 3;
-    place.y1 = place.y2 - (place.y2 - place.y1) / 2;
-    place.y2 += point.getHeight() / 4;
-    point.setQuad(place);
+    reset();
 }
 
 void Slider::render()
@@ -55,8 +51,8 @@ void Slider::setx(int x)
 void Slider::reset()
 {
     Quad place = bar.getQuad();
-    place.x1 += (bar.getWidth() / 2) - point.getWidth() / 6;
-    place.x2 = place.x1 + point.getWidth() / 3;
+    place.x1 += (bar.getWidth() / 2) - point.getWidth() / 4;
+    place.x2 = place.x1 + point.getWidth() / 2;
     place.y1 = place.y2 - (place.y2 - place.y1) / 2;
     place.y2 += point.getHeight() / 4;
     point.setQuad(place);

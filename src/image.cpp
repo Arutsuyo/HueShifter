@@ -124,25 +124,19 @@ void Image::dumpImage()
 void Image::setH(float h)
 {
     for (int i = 0; i < iwidth * iheight; i++)
-    {
         HSL_arr[i][0] += HSL_arr[i][0] * h;
-    }
 }
 
 void Image::setS(float s)
 {
     for (int i = 0; i < iwidth * iheight; i++)
-    {
         HSL_arr[i][1] += HSL_arr[i][1] * s;
-    }
 }
 
 void Image::setL(float l)
 {
     for (int i = 0; i < iwidth * iheight; i++)
-    {
         HSL_arr[i][2] += HSL_arr[i][2] * l;
-    }
 }
 
 int Image::getWidth()
