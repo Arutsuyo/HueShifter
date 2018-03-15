@@ -173,7 +173,7 @@ int main(void)
 	CreateWindows(image_window, tool_window);
 
 	Image image("image.png");
-    setMaxImage();
+   // setMaxImage();
     image.getImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
@@ -187,9 +187,7 @@ int main(void)
 	glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     glfwSetWindowPos(tool_window, 50, 100);
     glfwSetWindowPos(image_window, 500, 100);
-
-	image.generateHSL();
-	//image.updateTexture();
+//	image.generateHSL();
     
     // Main processing loop
     while (!glfwWindowShouldClose(image_window) 
@@ -204,6 +202,7 @@ int main(void)
 
         // Draw
         image.render();
+		//image.updateTexture();
 
 		assertGLError();
 
@@ -211,11 +210,9 @@ int main(void)
 
         // Error check
         assertGLError();
-
         // Flush and swap buffer
         glFlush();
         glfwSwapBuffers(image_window);
-
 
         // Tool Window Processing
         glfwMakeContextCurrent(tool_window);

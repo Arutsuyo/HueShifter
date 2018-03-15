@@ -59,6 +59,7 @@ private:
     int cmp;
     GLuint cmp_type;
     unsigned char *data;
+	unsigned char *saved_data;
     std::string iType;
     std::string iName;
 	std::vector< hsl_t > HSL_arr;
