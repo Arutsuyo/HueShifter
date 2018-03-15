@@ -92,7 +92,7 @@ void PreDraw(int w, int h)
     glLoadIdentity();
     //      left    right   bottom  top     near    far
     glOrtho(0.0f,   w,      0,      h,      -1.0f,  1.0f);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glColor3f(1.0f, 1.0f, 1.0f);
 
     assertGLError();
@@ -179,6 +179,12 @@ int main(void)
     toolRenders.push_back(&lSlide);
     Slider sSlide({ 50, 150, 145, 155 }, "img/S.png", "img/point.png");
     toolRenders.push_back(&sSlide);
+    Image saveIcon("img/save.png");
+    saveIcon.setInteractable(true);
+    saveIcon.setQuad({ 175, 250, 50, 125 });
+    Image refreshIcon("img/refresh.png");
+    refreshIcon.setInteractable(true);
+    refreshIcon.setQuad({ 275, 350, 50, 125 });
 
 	glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     glfwSetWindowPos(tool_window, 50, 100);
@@ -223,6 +229,8 @@ int main(void)
         // Draw
         for (int i = toolRenders.size() - 1; i >= 0; i--)
             toolRenders[i]->render();
+        saveIcon.render();
+        refreshIcon.render();
 
         assertGLError();
 
