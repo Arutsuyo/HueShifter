@@ -93,7 +93,7 @@ void Image::updateTexture()
 {
 	for (int i = 0; i < iwidth * iheight * cmp; i += cmp) {
 		rgb_t temp_rgb;
-		hsl_t temp_hsl = HSL_arr[1 / cmp];
+		hsl_t temp_hsl = HSL_arr[i / cmp];
 		temp_rgb = temp_hsl;
 		data[i] = temp_rgb[0];
 		data[i + 1] = temp_rgb[1];
