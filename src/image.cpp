@@ -81,9 +81,8 @@ void Image::generateHSL()
 	if (HSL_arr.size() == 0) {
 		HSL_arr.resize(iheight * iwidth);
 	}
-
 	for (int i = 0; i < iheight * iwidth * cmp; i += cmp) {
-		rgb_t temp_rgb({ data[0], data[1], data[2] });
+		rgb_t temp_rgb({ data[i+0], data[i+1], data[i+2] });
 		hsl_t temp_hsl;
 		temp_hsl = temp_rgb;
 		HSL_arr[i / cmp] = temp_hsl;

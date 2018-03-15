@@ -222,7 +222,7 @@ int main(void)
     // Grab Image to render
     const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     Image::SetScreenDetails(mode->width, mode->height);
-    Image image("image.png");
+    Image image("image.jpg");
     image.getMaxImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 
     // Tool Window loading
