@@ -17,7 +17,7 @@ extern "C"
 }
 #endif // Unix
 
-typedef struct 
+typedef struct
 {
     //  Left    Right   Bottom  Top
     int x1,     x2,     y1,     y2;
@@ -30,15 +30,20 @@ public:
     ~RenderObject();
 
     virtual void render();
-	virtual bool hovering(double x, double y);
-	virtual void slide(int x, int y);
+    virtual bool hovering(double x, double y);
+    virtual void slide(int x, int y);
     virtual void setx(int x);
 
     void setQuad(Quad newQ);
     Quad getQuad();
 
 protected:
+    // Can be clicked
     bool interactable;
+
+    // Location
     Quad loc;
+
+    // Texture
     GLuint tex;
 };
