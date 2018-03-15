@@ -37,6 +37,7 @@ vector<Image*> toolButtons;
 GLFWcursor* g_cursor = nullptr;
 bool imageResetFlag = false;
 bool imageDumpFlag = false;
+bool manipulationFlag = false;
 
 static void error_callback(int error, const char* description)
 {
@@ -199,6 +200,7 @@ void handleToolWindowInteraction(GLFWwindow* window)
         if (toolSliders[i]->hovering(xpos, ypos))
         {
             toolSliders[i]->setx(xpos);
+            manipulationFlag = true;
             return;
         }
     }
@@ -208,6 +210,7 @@ void setMaxImage()
 {
     const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     Image::SetScreenDetails(mode->width, mode->height);
+    Image::getMaxImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 }
 
 int main(void)
@@ -222,8 +225,7 @@ int main(void)
     // Grab Image to render
     setMaxImage();
 
-    Image image("image.jpg");
-    image.getImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
+    Image image("image.png");
 
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
@@ -241,13 +243,12 @@ int main(void)
     refreshIcon.setInteractable(true);
     refreshIcon.setQuad({ 275, 350, 50, 125 });
     toolButtons.push_back(&refreshIcon);
-	image.generateHSL();
-	image.updateTexture();
     glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     glfwSetWindowPos(tool_window, 50, 100);
     glfwSetWindowPos(image_window, 500, 100);
 
 
+    image.generateHSL();
     // Main processing loop
     while (!glfwWindowShouldClose(image_window)
         || !glfwWindowShouldClose(tool_window))
@@ -286,6 +287,13 @@ int main(void)
         PreDraw(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT);
 
         handleToolWindowInteraction(tool_window);
+        if (manipulationFlag)
+        {
+            image.setH(hSlide.getSliderValue());
+            image.setS(sSlide.getSliderValue());
+            image.setL(lSlide.getSliderValue());
+            image.updateTexture();
+        }
 
         // Draw
         for (int i = toolSliders.size() - 1; i >= 0; i--)

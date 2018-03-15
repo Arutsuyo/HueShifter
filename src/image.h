@@ -31,35 +31,53 @@ class Image : public RenderObject
 public:
     Image(std::string imageName);
     ~Image();
-	void generateHSL();
-	void updateTexture();
+
+    // Static call to make sure we don't have a large window
+    static void SetScreenDetails(int w, int h);
+    static void getMaxImageWindowSize(int &w, int &h);
+
+    // Image manipulation functions
+    void generateHSL();
+    void updateTexture();
+    void setH(float h);
+    void setS(float s);
+    void setL(float l);
+
+    // Create final image
     void dumpImage();
-	void setH();
-	void setS();
-	void setL();
+
+    // Standard image calls
     int getWidth();
     int getHeight();
-    void getImageWindowSize(int &w, int &h);
-    void setInteractable(bool inter);
     void scale(float xs, float ys);
-#ifndef NDEBUG
-    std::string getName();
-#endif
+
+    // Tools calls
+    void setInteractable(bool inter);
     char button();
     void resetImageData();
-    static void SetScreenDetails(int w, int h);
+
+#ifndef NDEBUG
+    // Only used in debug output
+    std::string getName();
+#endif
+
 private:
+    // Static variables to track max display size
     static int sWidth;
     static int sHeight;
-    int win_width;
-    int win_height;
+
+    // Image info
     int iwidth;
     int iheight;
     int cmp;
     GLuint cmp_type;
-    unsigned char *data;
-	unsigned char *saved_data;
     std::string iType;
     std::string iName;
-	std::vector< hsl_t > HSL_arr;
+    
+    // main data and original data
+    unsigned char *data;
+    unsigned char *o_data;
+
+    // Conversion vector
+    std::vector< hsl_t > HSL_arr;
 };

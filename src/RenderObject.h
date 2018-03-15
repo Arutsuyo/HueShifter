@@ -38,7 +38,12 @@ public:
     Quad getQuad();
 
 protected:
+    // Can be clicked
     bool interactable;
+
+    // Location
     Quad loc;
+
+    // Texture
     GLuint tex;
 };

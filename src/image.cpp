@@ -28,7 +28,7 @@ Image::Image(std::string imageName) : RenderObject()
     cout << "loading image type: " << iType << endl;
 #endif
     data = stbi_load(imageName.c_str(), &iwidth, &iheight, &cmp, 0);
-	saved_data = data;
+    o_data = stbi_load(imageName.c_str(), &iwidth, &iheight, &cmp, 0);
     if (data == NULL)
     {
         cerr << "Error: Image failed to load: " << imageName << endl;
@@ -44,9 +44,6 @@ Image::Image(std::string imageName) : RenderObject()
         0, 
         iheight > sHeight ? sHeight : iheight};
     
-    win_width = iwidth > sWidth ? sWidth : iwidth;
-    win_height = iheight > sHeight ? sHeight : iheight;
-
     glEnable(GL_TEXTURE_2D);
     if (cmp == 3)
     {
@@ -103,32 +100,40 @@ void Image::updateTexture()
 		data[i + 1] = temp_rgb[1];
 		data[i + 2] = temp_rgb[2];
 	}
-	/*
+	
+
 	// Bind texture we're putting data into
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
 
 	// Draw to texture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iwidth, iheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iwidth, iheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
-	// Unbind texture
-	glBindTexture(GL_TEXTURE_2D, 0);
-	*/
-}
-void setH() {
+    // Unbind texture
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 }
-void setS() {
 
-}
-void setL() {
-
-}
 void Image::dumpImage()
 {
     string temp = iName + "Dump.png";
     stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth);
+}
+
+void Image::setH(float h)
+{
+
+}
+
+void Image::setS(float s)
+{
+
+}
+
+void Image::setL(float l)
+{
+
 }
 
 int Image::getWidth()
@@ -141,10 +146,10 @@ int Image::getHeight()
     return iheight;
 }
 
-void Image::getImageWindowSize(int &w, int &h)
+void Image::getMaxImageWindowSize(int &w, int &h)
 {
-    w = win_width;
-    h = win_height;
+    w = sWidth;
+    h = sHeight;
 }
 
 void Image::setInteractable(bool inter)
@@ -182,7 +187,7 @@ void Image::resetImageData()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     // Draw to texture
-    glTexImage2D(GL_TEXTURE_2D, 0, cmp_type, iwidth, iheight, 0, cmp_type, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, cmp_type, iwidth, iheight, 0, cmp_type, GL_UNSIGNED_BYTE, o_data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Unbind texture
@@ -199,4 +204,5 @@ void Image::SetScreenDetails(int w, int h)
 Image::~Image()
 {
     stbi_image_free(data);
+    stbi_image_free(o_data);
 }
