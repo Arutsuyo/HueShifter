@@ -81,20 +81,15 @@ Image::Image(std::string imageName) : RenderObject()
 void Image::generateHSL()
 {
 	if (HSL_arr.size() == 0) {
-		HSL_arr.resize(iheight * iwidth * 3);
+		HSL_arr.resize(iheight * iwidth);
 	}
 
 	for (int i = 0; i < iheight * iwidth * cmp; i += cmp) {
-		HSL_arr[i/3][0] = data[i];
-		HSL_arr[i/3][1] = data[i+1];
-		HSL_arr[i/3][2] = data[i+2];
+		rgb_t temp_rgb({data[0], data[1], data[2] });
+		hsl_t temp_hsl;
+		temp_hsl = temp_rgb;
+		HSL_arr[i/cmp] = temp_hsl;
 	}
-
-	auto r = reinterpret_cast<rgb_t *>(HSL_arr.data());
-	auto h = reinterpret_cast<hsl_t *>(HSL_arr.data());
-
-	std::transform(r, r + HSL_arr.size(), h, [](rgb_t const& r) { return hsl_t(r); });
-	cout << typeid(HSL_arr[0][2]).name();
 }
 
 /*
@@ -132,12 +127,8 @@ void Image::generateHSL()
 void Image::updateTexture()
 {
 	for (int i = 0; i < iwidth * iheight * cmp; i += cmp) {
-		cout << "DATA TYPE: " << typeid(data[i]).name() << endl;
-		cout << "DATA TYPE: " << typeid(HSL_arr[i / cmp][0]).name() << endl;
 
-		data[i] = HSL_arr[i / cmp][0];
-		data[i+1] = HSL_arr[i / cmp][1];
-		data[i+2] = HSL_arr[i / cmp][2];
+
 	}
 
 	// Bind texture we're putting data into

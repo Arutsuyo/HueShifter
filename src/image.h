@@ -62,5 +62,4 @@ private:
     std::string iType;
     std::string iName;
 	std::vector< hsl_t > HSL_arr;
-	std::vector< rgb_t > RGB_arr;
 };

@@ -189,7 +189,7 @@ int main(void)
     glfwSetWindowPos(image_window, 500, 100);
 
 	image.generateHSL();
-	image.updateTexture();
+	//image.updateTexture();
     
     // Main processing loop
     while (!glfwWindowShouldClose(image_window) 
