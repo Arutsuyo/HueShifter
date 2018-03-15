@@ -59,7 +59,7 @@ Image::Image(std::string imageName) : RenderObject()
     
 void Image::dumpImage()
 {
-    string temp = iName + ".png";
+    string temp = iName + "Dump.png";
     stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth);
 }
 
@@ -87,6 +87,31 @@ void Image::scale(float xs, float ys)
 string Image::getName()
 {
     return iName;
+}
+
+char Image::button()
+{
+    return iName[0];
+}
+
+void Image::resetImageData()
+{
+    // Bind texture we're putting data into
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    // Parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+    // Draw to texture
+    glTexImage2D(GL_TEXTURE_2D, 0, cmp_type, iwidth, iheight, 0, cmp_type, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Unbind texture
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
 }
 
 Image::~Image()

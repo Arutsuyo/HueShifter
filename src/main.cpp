@@ -17,6 +17,7 @@ extern "C"
 #include <fstream>
 #include <vector>
 #include <assert.h>
+#include <time.h>
 #include "RenderObject.h"
 #include "Image.h"
 #include "Slider.h"
@@ -31,8 +32,11 @@ int TOOL_WIN_WIDTH = 400;
 int TOOL_WIN_HEIGHT = 200;
 
 // Master Objects
-vector<Slider*> toolRenders;
+vector<Slider*> toolSliders;
+vector<Image*> toolButtons;
 GLFWcursor* g_cursor = nullptr;
+bool imageResetFlag = false;
+bool imageDumpFlag = false;
 
 static void error_callback(int error, const char* description)
 {
@@ -122,7 +126,7 @@ void deleteCursorColor()
 	g_cursor = nullptr;
 }
 
-void handleCursorColor(GLFWwindow* window)
+void handleImageWindowInteraction(GLFWwindow* window)
 {
 	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 	if (state == GLFW_RELEASE)
@@ -138,8 +142,20 @@ void handleCursorColor(GLFWwindow* window)
     newCursorColor(xpos, ypos, window);
 }
 
-void handleSliders(GLFWwindow* window)
+void handleToolWindowInteraction(GLFWwindow* window)
 {
+    static time_t start;
+    static bool timing = false;
+    if (timing)
+    {
+        time_t end;
+        time(&end);
+        double elapsed = difftime(end, start);
+        cout << "DumpElapsed: " << elapsed << endl;
+        if (elapsed > 10)
+            timing = false;
+    }
+
     int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
     if (state == GLFW_RELEASE)
         return;
@@ -147,11 +163,33 @@ void handleSliders(GLFWwindow* window)
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
     ypos = TOOL_WIN_HEIGHT - ypos;
-    for (int i = toolRenders.size() - 1; i >= 0; i--)
+    for (int i = toolButtons.size() - 1; i >= 0; i--)
     {
-        if (toolRenders[i]->hovering(xpos, ypos))
+        if (toolButtons[i]->hovering(xpos, ypos))
         {
-            toolRenders[i]->setx(xpos);
+            switch(toolButtons[i]->button())
+            {
+            case 'r':
+                imageResetFlag = true;
+                break;
+            case 's' :
+                if (!timing)
+                {
+                    imageDumpFlag = true;
+                    time(&start);
+                    timing = true;
+                }
+                break;
+            default:
+                cerr << "Error: Unknown Tool Button" << endl;
+            }
+        }
+    }
+    for (int i = toolSliders.size() - 1; i >= 0; i--)
+    {
+        if (toolSliders[i]->hovering(xpos, ypos))
+        {
+            toolSliders[i]->setx(xpos);
             return;
         }
     }
@@ -159,6 +197,9 @@ void handleSliders(GLFWwindow* window)
 
 int main(void)
 {
+    time_t start, end;
+    double elapsed;
+
     // Prompt user to choose a file
 
     // Standard Windows
@@ -166,25 +207,27 @@ int main(void)
 	GLFWwindow* tool_window;
 	CreateWindows(image_window, tool_window);
 
-    // Make objects to render
+    // Grab Image to render
 	Image image("image.jpg");
 	IMAGE_WIN_WIDTH = image.getWidth();
 	IMAGE_WIN_HEIGHT = image.getHeight();
 
-    // Slider loading
+    // Tool Window loading
     glfwMakeContextCurrent(tool_window);
     Slider hSlide({ 50, 150, 5, 15 }, "img/H.png", "img/point.png");
-    toolRenders.push_back(&hSlide);
+    toolSliders.push_back(&hSlide);
     Slider lSlide({ 50, 150, 75, 85 }, "img/L.png", "img/point.png");
-    toolRenders.push_back(&lSlide);
+    toolSliders.push_back(&lSlide);
     Slider sSlide({ 50, 150, 145, 155 }, "img/S.png", "img/point.png");
-    toolRenders.push_back(&sSlide);
+    toolSliders.push_back(&sSlide);
     Image saveIcon("img/save.png");
     saveIcon.setInteractable(true);
     saveIcon.setQuad({ 175, 250, 50, 125 });
+    toolButtons.push_back(&saveIcon);
     Image refreshIcon("img/refresh.png");
     refreshIcon.setInteractable(true);
     refreshIcon.setQuad({ 275, 350, 50, 125 });
+    toolButtons.push_back(&refreshIcon);
 
 	glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     glfwSetWindowPos(tool_window, 50, 100);
@@ -207,7 +250,7 @@ int main(void)
 
 		assertGLError();
 
-		handleCursorColor(image_window);
+		handleImageWindowInteraction(image_window);
 
         // Error check
         assertGLError();
@@ -224,19 +267,32 @@ int main(void)
         // General
         PreDraw(TOOL_WIN_WIDTH, TOOL_WIN_HEIGHT);
 
-        handleSliders(tool_window);
+        handleToolWindowInteraction(tool_window);
 
         // Draw
-        for (int i = toolRenders.size() - 1; i >= 0; i--)
-            toolRenders[i]->render();
-        saveIcon.render();
-        refreshIcon.render();
+        for (int i = toolSliders.size() - 1; i >= 0; i--)
+            toolSliders[i]->render();
+        for (int i = toolButtons.size() - 1; i >= 0; i--)
+            toolButtons[i]->render();
 
         assertGLError();
 
         // Flush and swap buffer
         glFlush();
         glfwSwapBuffers(tool_window);
+
+        if (imageDumpFlag)
+        {
+            cout << "Dumping Image!" << endl;
+            image.dumpImage();
+            imageDumpFlag = !imageDumpFlag;
+        }
+        if (imageResetFlag)
+        {
+            cout << "reseting image" << endl;
+            image.resetImageData();
+            imageResetFlag = !imageResetFlag;
+        }
     }
 
     glfwDestroyWindow(tool_window);

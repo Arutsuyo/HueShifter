@@ -33,7 +33,9 @@ public:
     void setInteractable(bool inter);
     void scale(float xs, float ys);
     std::string getName();
+    char button();
 
+    void resetImageData();
 private:
     int iwidth;
     int iheight;
