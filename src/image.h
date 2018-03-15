@@ -30,6 +30,9 @@ public:
     void dumpImage();
 	int getWidth();
 	int getHeight();
+    void setInteractable(bool inter);
+    void scale(float xs, float ys);
+    std::string getName();
 
 private:
     int iwidth;

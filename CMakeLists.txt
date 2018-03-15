@@ -52,3 +52,6 @@ IF (UNIX AND NOT APPLE)
 	target_link_libraries(HueShifter ${OPENGL_LIBRARIES} ${glad_LIBRARIES})
 	target_link_libraries(HueShifter -lz -ldl -lglfw3 -lGL -lX11 -lm -lpthread)
 endif ()
+
+file(GLOB SLIDERS "img/*")
+file(COPY ${SLIDERS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/img)

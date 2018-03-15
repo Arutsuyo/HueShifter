@@ -32,9 +32,13 @@ public:
     virtual void render();
 	virtual bool hovering(double x, double y);
 	virtual void slide(int x, int y);
+    virtual void setx(int x);
+
+    void setQuad(Quad newQ);
+    Quad getQuad();
 
 protected:
-	bool interactable;
+    bool interactable;
     Quad loc;
     GLuint tex;
 };

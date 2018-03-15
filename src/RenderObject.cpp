@@ -1,4 +1,5 @@
 #include "RenderObject.h"
+#include <assert.h>
 using namespace std;
 
 
@@ -18,6 +19,8 @@ RenderObject::RenderObject()
 void RenderObject::render()
 {
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, tex);
     glBegin(GL_QUADS);
 
@@ -35,20 +38,50 @@ void RenderObject::render()
     glVertex2d(loc.x1, loc.y2);
 
     glEnd();
+    glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
+
+    if (glGetError() == GL_NO_ERROR)
+    {
+        assert(true);
+    }
 }
 
 bool RenderObject::hovering(double x, double y)
 {
-	return interactable;
+    if (interactable 
+        && x > loc.x1
+        && x < loc.x2
+        && y > loc.y1
+        && y < loc.y2)
+        return true;
+    else
+        return false;
 }
 
-void RenderObject::slide(int x, int y)
+void RenderObject::slide(int x, int y = 0)
 {
-	loc.x1 += x;
-	loc.x2 += x;
-	loc.y1 += y;
-	loc.y2 += y;
+    loc.x1 += x;
+    loc.x2 += x;
+    loc.y1 += y;
+    loc.y2 += y;
+}
+
+void RenderObject::setx(int x)
+{
+    int w = loc.x2 - loc.x1;
+    loc.x1 = x;
+    loc.x2 = x + w;
+}
+
+void RenderObject::setQuad(Quad newQ)
+{
+    loc = newQ;
+}
+
+Quad RenderObject::getQuad()
+{
+    return loc;
 }
 
 RenderObject::~RenderObject()
