@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <iostream>
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include "RenderObject.h"
+#include "color/color.hpp"
 
 #ifdef _WIN32
 #define APIENTRY __stdcall
@@ -21,13 +23,20 @@ extern "C"
 }
 #endif // Unix
 
+typedef color::rgb<uint8_t> rgb_t;
+typedef color::hsl<uint8_t> hsl_t;
+
 class Image : public RenderObject
 {
 public:
     Image(std::string imageName);
     ~Image();
-
+	void generateHSL();
+	void updateTexture();
     void dumpImage();
+	void setH();
+	void setS();
+	void setL();
     int getWidth();
     int getHeight();
     void getImageWindowSize(int &w, int &h);
@@ -38,7 +47,6 @@ public:
 #endif
     char button();
     void resetImageData();
-
     static void SetScreenDetails(int w, int h);
 private:
     static int sWidth;
@@ -50,6 +58,8 @@ private:
     int cmp;
     GLuint cmp_type;
     unsigned char *data;
+	unsigned char *saved_data;
     std::string iType;
     std::string iName;
+	std::vector< hsl_t > HSL_arr;
 };

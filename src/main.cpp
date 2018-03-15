@@ -241,7 +241,8 @@ int main(void)
     refreshIcon.setInteractable(true);
     refreshIcon.setQuad({ 275, 350, 50, 125 });
     toolButtons.push_back(&refreshIcon);
-
+	image.generateHSL();
+	image.updateTexture();
     glfwSetWindowSize(image_window, IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
     glfwSetWindowPos(tool_window, 50, 100);
     glfwSetWindowPos(image_window, 500, 100);

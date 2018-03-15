@@ -28,6 +28,7 @@ Image::Image(std::string imageName) : RenderObject()
     cout << "loading image type: " << iType << endl;
 #endif
     data = stbi_load(imageName.c_str(), &iwidth, &iheight, &cmp, 0);
+	saved_data = data;
     if (data == NULL)
     {
         cerr << "Error: Image failed to load: " << imageName << endl;
@@ -78,6 +79,52 @@ Image::Image(std::string imageName) : RenderObject()
     }
 }
 
+void Image::generateHSL()
+{
+	if (HSL_arr.size() == 0) {
+		HSL_arr.resize(iheight * iwidth);
+	}
+
+	for (int i = 0; i < iheight * iwidth * cmp; i += cmp) {
+		rgb_t temp_rgb({ data[0], data[1], data[2] });
+		hsl_t temp_hsl;
+		temp_hsl = temp_rgb;
+		HSL_arr[i / cmp] = temp_hsl;
+	}
+}
+
+void Image::updateTexture()
+{
+	for (int i = 0; i < iwidth * iheight * cmp; i += cmp) {
+		rgb_t temp_rgb;
+		hsl_t temp_hsl = HSL_arr[1 / cmp];
+		temp_rgb = temp_hsl;
+		data[i] = temp_rgb[0];
+		data[i + 1] = temp_rgb[1];
+		data[i + 2] = temp_rgb[2];
+	}
+	/*
+	// Bind texture we're putting data into
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	// Draw to texture
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, iwidth, iheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// Unbind texture
+	glBindTexture(GL_TEXTURE_2D, 0);
+	*/
+}
+void setH() {
+
+}
+void setS() {
+
+}
+void setL() {
+
+}
 void Image::dumpImage()
 {
     string temp = iName + "Dump.png";
