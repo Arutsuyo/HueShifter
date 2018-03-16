@@ -211,10 +211,6 @@ void handleToolWindowInteraction(GLFWwindow* window)
     }
 }
 
-void setMaxImage()
-{
-}
-
 int main(int argc, const char* argv[])
 {
 	if (argc != 2) {
