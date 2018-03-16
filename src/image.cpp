@@ -147,7 +147,7 @@ void Image::setL(float l)
 void Image::dumpImage()
 {
     string temp = iName + "Dump.png";
-    stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth);
+    stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth*cmp);
 }
 
 // Standard image calls
