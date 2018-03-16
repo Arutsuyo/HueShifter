@@ -28,7 +28,7 @@ using namespace std;
 
 int IMAGE_WIN_WIDTH = 1;
 int IMAGE_WIN_HEIGHT = 1;
-int TOOL_WIN_WIDTH = 600;
+int TOOL_WIN_WIDTH = 400;
 int TOOL_WIN_HEIGHT = 150;
 
 // Master Objects
@@ -239,8 +239,8 @@ int main(void)
     Image refreshIcon("img/refresh.png");
     saveIcon.setInteractable(true);
     refreshIcon.setInteractable(true);
-    saveIcon.setQuad({ 350, 395, 80, 130 });
-    refreshIcon.setQuad({ 350, 395, 20, 75 });
+    saveIcon.setQuad({ 340, 385, 85, 130 });
+    refreshIcon.setQuad({ 340, 385, 20, 65 });
     toolSliders.push_back(&hSlide);
     toolSliders.push_back(&sSlide);
     toolSliders.push_back(&lSlide);
