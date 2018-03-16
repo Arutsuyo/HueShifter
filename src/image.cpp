@@ -128,7 +128,7 @@ void Image::updateTexture()
 void Image::setH(float h)
 {
     for (int i = 0; i < iwidth * iheight; i++)
-        HSL_arr[i][0] += HSL_arr[i][0] * h;
+        HSL_arr[i][0] += HSL_arr[i][0] * h * 9;
 }
 
 void Image::setS(float s)
