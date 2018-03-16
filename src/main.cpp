@@ -195,12 +195,17 @@ void handleToolWindowInteraction(GLFWwindow* window)
             }
         }
     }
+    static double x;
     for (int i = toolSliders.size() - 1; i >= 0; i--)
     {
         if (toolSliders[i]->hovering(xpos, ypos))
         {
-            toolSliders[i]->setx(xpos);
-            manipulationFlag = true;
+            if (x != xpos)
+            {
+                x = xpos;
+                toolSliders[i]->setx(xpos);
+                manipulationFlag = true;
+            }
             return;
         }
     }
