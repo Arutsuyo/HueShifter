@@ -1,0 +1,7 @@
+HueShifter - March 11
+Narayan Emery, Andrea Nosler
+
+Nara got all the OpenGL stuff set up,
+and I got to work reading tons of GL
+documentation, Nara got the images
+to load, and a texture to render them.

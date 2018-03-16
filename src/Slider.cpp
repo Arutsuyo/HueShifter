@@ -51,7 +51,8 @@ void Slider::setx(int x)
 void Slider::reset()
 {
     Quad place = bar.getQuad();
-    place.x1 += (bar.getWidth() / 2) - point.getWidth() / 4;
+	int w = place.x2 - place.x1;
+    place.x1 += (w / 2) - point.getWidth() / 4;
     place.x2 = place.x1 + point.getWidth() / 2;
     place.y1 = place.y2 - (place.y2 - place.y1) / 2;
     place.y2 += point.getHeight() / 4;
@@ -60,12 +61,12 @@ void Slider::reset()
 
 float Slider::getSliderValue()
 {
-    Quad bq = bar.getQuad();
-    Quad pq = point.getQuad();
+	Quad bq = bar.getQuad();
+	Quad pq = point.getQuad();
 
-    int midx = (pq.x2 - pq.x1) / 2;
-    midx += pq.x1;
-    return ((midx - bq.x1) / ((float)(bq.x2 - bq.x1))) - 0.5f;
+	int midx = (pq.x2 - pq.x1) / 2;
+	midx += pq.x1;
+	return ((midx - bq.x1) / ((float)(bq.x2 - bq.x1))) - 0.5f;
 }
 
 Slider::~Slider()
