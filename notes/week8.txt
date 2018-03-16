@@ -1,0 +1,6 @@
+HueShifter - March 1
+Narayan Emery, Andrea Nosler
+
+We met up, got our libraries set up,
+got Cmake configured, got our project
+built, and our VS's all VS'ed up.
