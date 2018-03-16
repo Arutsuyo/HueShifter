@@ -215,9 +215,13 @@ void setMaxImage()
 {
 }
 
-int main(void)
+int main(int argc, const char* argv[])
 {
-    // Prompt user to choose a file
+	if (argc != 2) {
+		cout << "error; please run with an image filename" << endl;
+		return(1);
+	}
+	string f_name = argv[1];
 
     // Standard Windows
     GLFWwindow* image_window;
@@ -227,7 +231,7 @@ int main(void)
     // Grab Image to render
     const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     Image::SetScreenDetails(mode->width, mode->height);
-    Image image("image.jpg");
+    Image image(f_name);
     image.getMaxImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 
     // Tool Window loading

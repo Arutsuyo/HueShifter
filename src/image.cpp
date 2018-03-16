@@ -111,7 +111,6 @@ void Image::updateTexture()
 		data[i + 2] = temp_rgb[2];
 	}
 	
-
 	// Bind texture we're putting data into
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
