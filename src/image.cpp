@@ -133,14 +133,32 @@ void Image::setH(float h)
 
 void Image::setS(float s)
 {
-    for (int i = 0; i < iwidth * iheight; i++)
-        HSL_arr[i][1] += HSL_arr[i][1] * s;
+	s *= 2.0f;
+	for (int i = 0; i < iwidth * iheight; i++)
+	{
+		float v = ((float)HSL_arr[i][1]) * s + HSL_arr[i][1];
+		if (v > 255)
+			HSL_arr[i][1] = 255;
+		else if (v < 0)
+			HSL_arr[i][1] = 0;
+		else
+			HSL_arr[i][1] += HSL_arr[i][1] * s;
+	}
 }
 
 void Image::setL(float l)
 {
-    for (int i = 0; i < iwidth * iheight; i++)
-        HSL_arr[i][2] += HSL_arr[i][2] * l;
+	l *= 2.0f;
+	for (int i = 0; i < iwidth * iheight; i++)
+	{
+		float v = ((float)HSL_arr[i][2]) * l + HSL_arr[i][2];
+		if (v > 255)
+			HSL_arr[i][2] = 255;
+		else if(v < 0)
+			HSL_arr[i][2] = 0;
+		else
+			HSL_arr[i][2] += HSL_arr[i][2] * l;
+	}
 }
 
 // Create final image
