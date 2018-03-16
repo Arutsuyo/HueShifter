@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.1)
 
 project(HueShifter)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -26,13 +26,15 @@ FILE(GLOB LOOSEHEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
 FILE(GLOB DLLS ${CMAKE_SOURCE_DIR}/lib/Win32/*.dll)
 FILE(GLOB LIBS ${CMAKE_SOURCE_DIR}/lib/Win32/*.lib)
 
-SOURCE_GROUP("Sources" FILES${SOURCE_SOURCE})
-SOURCE_GROUP("Headers" FILES${SOURCE_HEADERS})
-SOURCE_GROUP("exheaders" 	FILES${GLFWHEADERS}
-							FILES${LOOSEHEADERS}
-							FILES${GLADHEADERS}
-							FILES${COLORHEADERS}
-							)
+IF(WIN32)
+	SOURCE_GROUP("Sources" FILES${SOURCE_SOURCE})
+	SOURCE_GROUP("Headers" FILES${SOURCE_HEADERS})
+	SOURCE_GROUP("exheaders" 	FILES${GLFWHEADERS}
+					FILES${LOOSEHEADERS}
+					FILES${GLADHEADERS}
+					FILES${COLORHEADERS}
+					)
+endif()
 
 SET(SOURCES ${SOURCE_SOURCE})
 SET(HEADERS ${SOURCE_HEADERS}
@@ -43,24 +45,29 @@ SET(HEADERS ${SOURCE_HEADERS}
 			)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
-LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/Win32)
-
+IF(WIN32)
+	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib/Win32)
+ELSE()
+	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/lib)
+ENDIF()
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
+IF(WIN32)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+ENDIF()
 add_executable(HueShifter ${SOURCES} ${HEADERS})
-TARGET_LINK_LIBRARIES(HueShifter glfw3.lib glad.lib)
-
+IF(WIN32)
+	TARGET_LINK_LIBRARIES(HueShifter glfw3.lib glad.lib)
+ENDIF()
 foreach(dll ${DLL})
 	FILE (COPY ${dll} DESTINATION ${PROJECT_BINARY_DIR}/bin)
 ENDFOREACH()
 
 IF (UNIX AND NOT APPLE)
 	FIND_PACKAGE(OpenGL REQUIRED)
-	FIND_PACKAGE(glad REQUIRED)
-	target_link_libraries(HueShifter ${OPENGL_LIBRARIES} ${glad_LIBRARIES})
-	target_link_libraries(HueShifter -lz -ldl -lglfw3 -lGL -lX11 -lm -lpthread)
+#	target_include_directories(HueShifter ${OPENGL_INCLUDE_DIR})
+	target_link_libraries(HueShifter ${OPENGL_gl_LIBRARY})
+	target_link_libraries(HueShifter -L${CMAKE_SOURCE_DIR}/lib -lglfw3 -lglad -ldl -lX11 -lm -lpthread)
 endif ()
 
 file(GLOB SLIDERS "img/*")
