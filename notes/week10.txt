@@ -1,0 +1,14 @@
+HueShifter - March 15
+Narayan Emery, Andrea Nosler
+
+It is the final day, and it is done.
+
+After a lot of trial and error, the library is handling our conversions right.
+Nara created a ton of infrastructure, and basically organized the whole project.
+I created some images for bars and pointer graphics for color sliding. The colors
+are finally finally FINALLY shifting properly, as there was a lot of difficulty
+trying to get it to scale the proper values. Lots of overflowing. But now, we have
+a fast program that can shift hues of an image and dump them to a new image.
+
+Nara has been waiting for like two hours for Ubuntu to install so that we can
+finally get it working on Unix.

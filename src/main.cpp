@@ -29,7 +29,7 @@ using namespace std;
 int IMAGE_WIN_WIDTH = 1;
 int IMAGE_WIN_HEIGHT = 1;
 int TOOL_WIN_WIDTH = 400;
-int TOOL_WIN_HEIGHT = 200;
+int TOOL_WIN_HEIGHT = 150;
 
 // Master Objects
 vector<Slider*> toolSliders;
@@ -215,9 +215,13 @@ void setMaxImage()
 {
 }
 
-int main(void)
+int main(int argc, const char* argv[])
 {
-    // Prompt user to choose a file
+	if (argc != 2) {
+		cout << "error; please run with an image filename" << endl;
+		return(1);
+	}
+	string f_name = argv[1];
 
     // Standard Windows
     GLFWwindow* image_window;
@@ -227,20 +231,20 @@ int main(void)
     // Grab Image to render
     const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
     Image::SetScreenDetails(mode->width, mode->height);
-    Image image("image.jpg");
+    Image image(f_name);
     image.getMaxImageWindowSize(IMAGE_WIN_WIDTH, IMAGE_WIN_HEIGHT);
 
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
-    Slider hSlide({ 50, 150, 145, 155 }, "img/H.png", "img/point.png");
-    Slider sSlide({ 50, 150, 75, 85 }, "img/S.png", "img/point.png");
-    Slider lSlide({ 50, 150, 5, 15 }, "img/L.png", "img/point.png");
+    Slider hSlide({ 15, 325, 105, 130 }, "img/H.png", "img/point.png");
+    Slider sSlide({ 15, 325, 60, 85 }, "img/S.png", "img/point.png");
+    Slider lSlide({ 15, 325, 10, 35 }, "img/L.png", "img/point.png");
     Image saveIcon("img/save.png");
     Image refreshIcon("img/refresh.png");
     saveIcon.setInteractable(true);
     refreshIcon.setInteractable(true);
-    saveIcon.setQuad({ 175, 250, 50, 125 });
-    refreshIcon.setQuad({ 275, 350, 50, 125 });
+    saveIcon.setQuad({ 340, 385, 85, 130 });
+    refreshIcon.setQuad({ 340, 385, 20, 65 });
     toolSliders.push_back(&hSlide);
     toolSliders.push_back(&sSlide);
     toolSliders.push_back(&lSlide);
