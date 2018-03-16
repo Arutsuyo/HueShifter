@@ -28,8 +28,8 @@ using namespace std;
 
 int IMAGE_WIN_WIDTH = 1;
 int IMAGE_WIN_HEIGHT = 1;
-int TOOL_WIN_WIDTH = 400;
-int TOOL_WIN_HEIGHT = 200;
+int TOOL_WIN_WIDTH = 600;
+int TOOL_WIN_HEIGHT = 150;
 
 // Master Objects
 vector<Slider*> toolSliders;
@@ -227,15 +227,15 @@ int main(void)
 
     // Tool Window loading
     glfwMakeContextCurrent(tool_window);
-    Slider hSlide({ 50, 150, 145, 155 }, "img/H.png", "img/point.png");
-    Slider sSlide({ 50, 150, 75, 85 }, "img/S.png", "img/point.png");
-    Slider lSlide({ 50, 150, 5, 15 }, "img/L.png", "img/point.png");
+    Slider hSlide({ 15, 325, 105, 130 }, "img/H.png", "img/point.png");
+    Slider sSlide({ 15, 325, 60, 85 }, "img/S.png", "img/point.png");
+    Slider lSlide({ 15, 325, 10, 35 }, "img/L.png", "img/point.png");
     Image saveIcon("img/save.png");
     Image refreshIcon("img/refresh.png");
     saveIcon.setInteractable(true);
     refreshIcon.setInteractable(true);
-    saveIcon.setQuad({ 175, 250, 50, 125 });
-    refreshIcon.setQuad({ 275, 350, 50, 125 });
+    saveIcon.setQuad({ 350, 395, 80, 130 });
+    refreshIcon.setQuad({ 350, 395, 20, 75 });
     toolSliders.push_back(&hSlide);
     toolSliders.push_back(&sSlide);
     toolSliders.push_back(&lSlide);
