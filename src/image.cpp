@@ -74,7 +74,18 @@ Image::Image(std::string imageName) : RenderObject()
     {
         assert(true);
     }
+} // End Image::Image
+
+// Static call to make sure we don't have a large window
+void Image::SetScreenDetails(int w, int h)
+{
+    sWidth = w - 400;
+    sHeight = h - 400;
 }
+
+// ----------------------------
+// Image manipulation functions
+// ----------------------------
 
 void Image::generateHSL()
 {
@@ -114,12 +125,6 @@ void Image::updateTexture()
 
 }
 
-void Image::dumpImage()
-{
-    string temp = iName + "Dump.png";
-    stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth);
-}
-
 void Image::setH(float h)
 {
     for (int i = 0; i < iwidth * iheight; i++)
@@ -138,6 +143,15 @@ void Image::setL(float l)
         HSL_arr[i][2] += HSL_arr[i][2] * l;
 }
 
+// Create final image
+void Image::dumpImage()
+{
+    string temp = iName + "Dump.png";
+    stbi_write_png(temp.c_str(), iwidth, iheight, cmp, data, iwidth);
+}
+
+// Standard image calls
+
 int Image::getWidth()
 {
     return iwidth;
@@ -147,6 +161,16 @@ int Image::getHeight()
 {
     return iheight;
 }
+
+void Image::scale(float xs, float ys)
+{
+    loc.x2 = loc.x1 + iwidth / xs;
+    loc.y2 = loc.y1 + iheight / ys;
+}
+
+// -----------
+// Tools calls
+// -----------
 
 void Image::getMaxImageWindowSize(int &w, int &h)
 {
@@ -158,19 +182,6 @@ void Image::setInteractable(bool inter)
 {
     interactable = inter;
 }
-
-void Image::scale(float xs, float ys)
-{
-    loc.x2 = loc.x1 + iwidth / xs;
-    loc.y2 = loc.y1 + iheight / ys;
-}
-
-#ifndef NDEBUG
-string Image::getName()
-{
-    return iName;
-}
-#endif
 
 char Image::button()
 {
@@ -200,11 +211,12 @@ void Image::resetImageData()
     glDisable(GL_TEXTURE_2D);
 }
 
-void Image::SetScreenDetails(int w, int h)
+#ifndef NDEBUG
+string Image::getName()
 {
-    sWidth = w - 400;
-    sHeight = h - 400;
+    return iName;
 }
+#endif
 
 Image::~Image()
 {
